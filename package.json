@@ -1,0 +1,22 @@
+{
+  "name": "m3l",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.32.1",
+    "@duckdb/duckdb-wasm": "^1.29.0",
+    "@types/node": "^22.10.2",
+    "openai": "^4.76.3",
+    "typescript": "^5.7.2",
+    "vite": "^6.0.3"
+  }
+}

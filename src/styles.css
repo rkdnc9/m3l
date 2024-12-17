@@ -1,0 +1,268 @@
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: 'IBM Plex Mono', 'Consolas', 'Monaco', 'Courier New', monospace;
+    background-color: #1a1a1a;
+    color: #00ff00; /* Classic terminal green */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    line-height: 1.6;
+}
+
+.container {
+    width: 90%;
+    max-width: 800px;
+    padding: 20px;
+    background-color: #000000;
+    border: 1px solid #00ff00;
+    border-radius: 4px;
+    box-shadow: 0 0 10px rgba(0, 255, 0, 0.2);
+}
+
+.terminal-header {
+    margin-bottom: 30px;
+    padding: 25px 20px;
+    border-bottom: 1px solid #004400;
+    background-color: #0a0a0a;
+}
+
+.terminal-header h1 {
+    color: #00ff00;
+    font-size: 2em;
+    margin-bottom: 15px;
+    letter-spacing: 1px;
+}
+
+.terminal-header .header-content {
+    color: #00cc00;
+    font-size: 1em;
+    line-height: 1.5;
+    max-width: 600px;
+}
+
+@media (max-width: 600px) {
+    .terminal-header {
+        padding: 20px 15px;
+    }
+
+    .terminal-header h1 {
+        font-size: 1.6em;
+    }
+
+    .terminal-header .header-content {
+        font-size: 0.9em;
+    }
+}
+
+.header-content {
+    color: var(--text-secondary);
+    font-size: 1em;
+    line-height: 1.5;
+    max-width: 600px;
+}
+
+.header-content p {
+    margin-bottom: 10px;
+}
+
+.feature-list {
+    list-style: none;
+    padding-left: 20px;
+}
+
+.feature-list li {
+    position: relative;
+    padding-left: 15px;
+    margin-bottom: 8px;
+}
+
+.feature-list li:before {
+    content: "-";
+    position: absolute;
+    left: 0;
+    color: var(--text-primary);
+}
+
+.input-section, .results-section {
+    margin-bottom: 20px;
+    padding: 15px;
+    border: 1px solid #004400;
+    border-radius: 2px;
+}
+
+.api-key-section, .file-section, .query-section {
+    margin-bottom: 15px;
+    padding: 10px;
+    background-color: #0a0a0a;
+}
+
+/* File section styling */
+.file-section {
+    display: flex;
+    gap: 10px;
+    position: relative;
+    margin-bottom: 15px;
+    padding: 10px;
+    background-color: #0a0a0a;
+    align-items: center;
+}
+
+input[type="file"] {
+    opacity: 0;
+    width: 200px;
+    height: 40px;
+    cursor: pointer;
+}
+
+.file-section::before {
+    content: "Select File...";
+    position: absolute;
+    left: 10px;
+    color: #00ff00;
+    pointer-events: none;
+    padding: 12px;
+    border: 1px solid #00ff00;
+    background-color: #000000;
+    width: 200px;
+    box-sizing: border-box;
+}
+
+.file-section button {
+    flex: 1;
+    margin-left: 10px;
+}
+
+input[type="password"],
+input[type="text"],
+textarea,
+select {
+    width: 100%;
+    padding: 12px;
+    background-color: #000000;
+    color: #00ff00;
+    border: 1px solid #00ff00;
+    border-radius: 0;
+    font-family: inherit;
+    font-size: 14px;
+    margin-bottom: 10px;
+}
+
+textarea {
+    min-height: 100px;
+    resize: vertical;
+}
+
+select {
+    appearance: none;
+    background: url("data:image/svg+xml;utf8,<svg fill='%2300ff00' height='24' viewBox='0 0 24 24' width='24' xmlns='http://www.w3.org/2000/svg'><path d='M7 10l5 5 5-5z'/></svg>") no-repeat right 10px center #000000;
+    padding-right: 30px;
+}
+
+button {
+    width: 100%;
+    padding: 12px;
+    background-color: #000000;
+    color: #00ff00;
+    border: 1px solid #00ff00;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 14px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    transition: all 0.3s ease;
+}
+
+button:hover {
+    background-color: #00ff00;
+    color: #000000;
+}
+
+/* Results section styling */
+.results-section table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+    border: 1px solid #00ff00;
+}
+
+.results-section th,
+.results-section td {
+    padding: 10px;
+    text-align: left;
+    border: 1px solid #004400;
+}
+
+.results-section th {
+    background-color: #004400;
+    color: #00ff00;
+}
+
+.results-section tr:nth-child(even) {
+    background-color: #0a0a0a;
+}
+
+/* Toast notification styling */
+.toast {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background-color: #000000;
+    color: #00ff00;
+    border: 1px solid #00ff00;
+    padding: 15px 20px;
+    border-radius: 0;
+    z-index: 1000;
+    font-family: inherit;
+    animation: fade-in 0.3s, fade-out 0.3s 2.7s;
+}
+
+@keyframes fade-in {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fade-out {
+    from { opacity: 1; transform: translateY(0); }
+    to { opacity: 0; transform: translateY(20px); }
+}
+
+/* Focus states */
+input:focus,
+textarea:focus,
+select:focus,
+button:focus {
+    outline: none;
+    box-shadow: 0 0 5px rgba(0, 255, 0, 0.5);
+}
+
+/* Media queries for responsiveness */
+@media (max-width: 600px) {
+    .container {
+        width: 95%;
+        padding: 10px;
+    }
+
+    .file-section {
+        flex-direction: column;
+        gap: 5px;
+    }
+
+    .file-section::before {
+        width: 100%;
+    }
+
+    input[type="file"] {
+        width: 100%;
+    }
+
+    .file-section button {
+        margin-left: 0;
+        margin-top: 10px;
+    }
+}

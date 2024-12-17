@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cross-Origin-Opener-Policy" content="same-origin">
+    <meta http-equiv="Cross-Origin-Embedder-Policy" content="require-corp">
+    <meta http-equiv="Content-Security-Policy" content="script-src 'self' 'unsafe-eval' 'unsafe-inline' blob:;">
+    <title>M3L</title>
+    <link rel="stylesheet" href="/src/styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+</head>
+
+<body>
+    <div class="container">
+        <div class="terminal-header">
+            <h1>👋 I'm M3L</h1>
+            <div class="header-content">
+                <p>Your personal AI data analyst. Here's how it works:</p>
+                <ul class="feature-list">
+                    <li>Load your data file securely</li>
+                    <li>Connect with your AI service provider</li>
+                    <li>Ask questions about your data</li>
+                    <li>All analysis happens right on your computer</li>
+                    <li>Only basic data structure is shared with your AI provider, never your actual data</li>
+                </ul>
+            </div>
+        </div>
+        <div class="input-section">
+            <div class="api-key-section">
+                <input type="password" id="api-key" placeholder="Enter OpenAI/Claude API Key">
+                <select id="api-provider">
+                    <option value="openai">OpenAI</option>
+                    <option value="claude">Claude</option>
+                </select>
+            </div>
+
+            <div class="file-section">
+                <input type="file" id="file-input" accept=".csv,.json">
+                <button id="upload-btn">LOAD FILE</button>
+            </div>
+
+            <div class="query-section">
+                <textarea id="nl-query" placeholder="Enter your question in natural language"></textarea>
+                <button id="submit-query">ASK M3L</button>
+            </div>
+        </div>
+
+        <div class="results-section">
+            <div id="results-table"></div>
+        </div>
+    </div>
+    <script type="module" src="/src/main.ts"></script>
+</body>
+
+</html>
