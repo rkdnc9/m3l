@@ -89,7 +89,6 @@ class App {
         }
 
         if (!this.llm) {
-            const apiKeyInput = document.getElementById('api-key') as HTMLInputElement;
             this.showToast('Please enter an API key');
             return;
         }

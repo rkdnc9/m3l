@@ -52,7 +52,12 @@ export class LLMHandler {
                     }
                 ]
             });
-            return response.content[0].text;
+        
+            // Fix the type error by checking the content type
+            if (response.content[0].type === 'text') {
+                return response.content[0].text;
+            }
+            return '';
         }
     }
 }
