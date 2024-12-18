@@ -59,6 +59,7 @@ class App {
     private async handleFileUpload() {
         const fileInput = document.getElementById('file-input') as HTMLInputElement;
         const file = fileInput.files?.[0];
+        const filename = fileInput.files?.[0].name;
         
         if (!file) {
             this.showToast('Please select a file');
@@ -67,7 +68,7 @@ class App {
 
         try {
             this.schema = await this.duckdb.loadFile(file);
-            this.showToast('File loaded successfully!');
+            this.showToast(`File ${filename} loaded successfully!`);
         } catch (error) {
             this.showToast(`Error loading file: ${error}`);
             console.error('File loading error:', error);
