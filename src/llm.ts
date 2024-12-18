@@ -32,7 +32,7 @@ export class LLMHandler {
                 messages: [
                     {
                         role: "system",
-                        content: "You are a SQL query generator. Only return the SQL query, no explanations. Always use 'data_table' as the table name."
+                        content: "You are a SQL query generator. Only return the DuckDB compatible SQL query, no explanations. Always use 'data_table' as the table name."
                     },
                     { 
                         role: "user", 

@@ -1,4 +1,4 @@
-# M3L - Local Data Analysis Assistant
+# M3L - Your personal AI data analyst.
 
 A secure web application that allows you to analyze data locally using AI services (OpenAI/Claude) while keeping your data private.
 
