@@ -21,7 +21,6 @@
     box-sizing: border-box;
     margin: 0;
     padding: 0;
-    border-radius: inherit;
 }
 
 body {
@@ -429,6 +428,7 @@ body {
     margin-bottom: 15px;
     padding: 10px;
     background-color: #0a0a0a;
+    border-radius: 12px;
 }
 
 /* File section styling */
