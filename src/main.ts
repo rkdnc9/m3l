@@ -9,6 +9,7 @@ class App {
     constructor() {
         this.duckdb = new DuckDBHandler();
         this.initializeApp();
+        this.showHelpModal();
     }
 
     private async initializeApp() {
@@ -218,6 +219,35 @@ class App {
         setTimeout(() => {
             toast.remove();
         }, 3000);
+    }
+
+    private showHelpModal() {
+        const helpModal = document.querySelector('.help-modal') as HTMLElement;
+        if (helpModal) {
+            helpModal.removeAttribute('hidden');
+        }
+
+        // Add event listener for closing modal if not already added
+        const closeHelp = document.querySelector('.close-help') as HTMLElement;
+        if (closeHelp) {
+            closeHelp.addEventListener('click', () => {
+                helpModal.setAttribute('hidden', '');
+            });
+        }
+
+        // Close on backdrop click
+        helpModal?.addEventListener('click', (e) => {
+            if (e.target === helpModal) {
+                helpModal.setAttribute('hidden', '');
+            }
+        });
+
+        // Close on Escape key
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && !helpModal?.hasAttribute('hidden')) {
+                helpModal?.setAttribute('hidden', '');
+            }
+        });
     }
 }
 
