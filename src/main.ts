@@ -10,6 +10,7 @@ class App {
         this.duckdb = new DuckDBHandler();
         this.initializeApp();
         this.showHelpModal();
+        this.setupThemeSelector();
     }
 
     private async initializeApp() {
@@ -247,6 +248,34 @@ class App {
             if (e.key === 'Escape' && !helpModal?.hasAttribute('hidden')) {
                 helpModal?.setAttribute('hidden', '');
             }
+        });
+    }
+
+    private setupThemeSelector() {
+        const colorOptions = document.querySelectorAll('.color-option');
+        const body = document.body;
+
+        // Set initial theme
+        const currentTheme = localStorage.getItem('theme') || 'purple';
+        body.className = `theme-${currentTheme}`;
+        document.querySelector(`.color-option.${currentTheme}`)?.classList.add('active');
+
+        colorOptions.forEach(option => {
+            option.addEventListener('click', (e) => {
+                const theme = (e.currentTarget as HTMLElement).dataset.theme;
+                
+                // Remove active class from all options
+                colorOptions.forEach(opt => opt.classList.remove('active'));
+                
+                // Add active class to selected option
+                e.currentTarget.classList.add('active');
+                
+                // Apply theme
+                body.className = `theme-${theme}`;
+                
+                // Save theme preference
+                localStorage.setItem('theme', theme);
+            });
         });
     }
 }

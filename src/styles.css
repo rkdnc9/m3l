@@ -773,3 +773,267 @@ button:focus {
 .file-input-wrapper.has-file .file-name {
     color: var(--accent-primary);
 }
+
+/* Color selector styling */
+.theme-help-section {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    align-self: flex-end;
+}
+
+.color-selector {
+    display: flex;
+    gap: 8px;
+    padding: 4px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 20px;
+}
+
+.color-option {
+    width: 24px;
+    height: 24px;
+    border-radius: 12px;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    transition: all 0.2s ease;
+}
+
+.color-option .color-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 6px;
+    transition: all 0.2s ease;
+}
+
+/* Purple theme dots */
+.color-option.purple .color-dot {
+    background: #BD00FF;
+}
+
+/* Amber theme dots */
+.color-option.amber .color-dot {
+    background: #FF9F0A;
+}
+
+/* White theme dots */
+.color-option.white .color-dot {
+    background: #FFFFFF;
+}
+
+.color-option:hover {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.color-option.active {
+    background: rgba(255, 255, 255, 0.15);
+}
+
+/* Color Schemes */
+:root {
+    /* Default Purple Theme */
+    --purple-bg-primary: #0F0E13;
+    --purple-bg-secondary: #1A1625;
+    --purple-accent-primary: #BD00FF;
+    --purple-accent-secondary: #7000FF;
+    --purple-neon-glow: #E100FF;
+    
+    /* Amber Theme */
+    --amber-bg-primary: #1C1C1E;
+    --amber-bg-secondary: #2C2C2E;
+    --amber-accent-primary: #FF9F0A;
+    --amber-accent-secondary: #FFB340;
+    --amber-neon-glow: #FFC168;
+    
+    /* White Theme */
+    --white-bg-primary: #000000;
+    --white-bg-secondary: #1C1C1E;
+    --white-accent-primary: #FFFFFF;
+    --white-accent-secondary: #A8A8A8;
+    --white-neon-glow: #FFFFFF;
+}
+
+/* Theme Classes */
+.theme-purple {
+    --bg-primary: var(--purple-bg-primary);
+    --bg-secondary: var(--purple-bg-secondary);
+    --accent-primary: var(--purple-accent-primary);
+    --accent-secondary: var(--purple-accent-secondary);
+    --neon-glow: var(--purple-neon-glow);
+}
+
+.theme-amber {
+    --bg-primary: var(--amber-bg-primary);
+    --bg-secondary: var(--amber-bg-secondary);
+    --accent-primary: var(--amber-accent-primary);
+    --accent-secondary: var(--amber-accent-secondary);
+    --neon-glow: var(--amber-neon-glow);
+}
+
+.theme-white {
+    --bg-primary: var(--white-bg-primary);
+    --bg-secondary: var(--white-bg-secondary);
+    --accent-primary: var(--white-accent-primary);
+    --accent-secondary: var(--white-accent-secondary);
+    --neon-glow: var(--white-neon-glow);
+}
+
+/* API Provider Dropdown */
+select {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: var(--accent-primary);
+}
+
+select:hover {
+    border-color: var(--accent-primary);
+}
+
+/* File Selection Button */
+#upload-btn {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--accent-primary);
+    color: var(--accent-primary);
+}
+
+#upload-btn:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: var(--accent-secondary);
+    color: var(--accent-secondary);
+}
+
+/* Ask Question Button */
+#submit-query {
+    background: var(--gradient-primary);
+    color: var(--text-primary);
+    border: none;
+}
+
+#submit-query:hover {
+    background: var(--gradient-secondary);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(var(--accent-primary-rgb), 0.2);
+}
+
+/* Results Table Header */
+.results-section th {
+    background: rgba(255, 255, 255, 0.05);
+    color: var(--accent-primary);
+    border-bottom: 1px solid var(--accent-primary);
+}
+
+/* Help Icon */
+.help-icon {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--accent-primary);
+    color: var(--accent-primary);
+}
+
+.help-icon:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: var(--accent-secondary);
+    color: var(--accent-secondary);
+}
+
+/* Help Modal */
+.help-modal {
+    backdrop-filter: blur(8px);
+}
+
+.help-content {
+    background: var(--bg-secondary);
+    border: 1px solid var(--accent-primary);
+}
+
+.help-content h1 {
+    color: var(--accent-primary);
+}
+
+.help-content p {
+    color: var(--text-primary);
+}
+
+.feature-list li {
+    color: var(--text-secondary);
+}
+
+.feature-list li::before {
+    color: var(--accent-primary);
+}
+
+.close-help {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--accent-primary);
+    color: var(--accent-primary);
+}
+
+.close-help:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: var(--accent-secondary);
+    color: var(--accent-secondary);
+}
+
+/* Updated Color Schemes */
+:root {
+    /* Purple Theme */
+    --purple-bg-primary: #0F0E13;
+    --purple-bg-secondary: #1A1625;
+    --purple-accent-primary: #BD00FF;
+    --purple-accent-secondary: #7000FF;
+    --purple-accent-primary-rgb: 189, 0, 255;
+    --purple-gradient-primary: linear-gradient(135deg, #BD00FF 0%, #7000FF 100%);
+    --purple-gradient-secondary: linear-gradient(135deg, #7000FF 0%, #BD00FF 100%);
+
+    /* Amber Theme */
+    --amber-bg-primary: #1C1C1E;
+    --amber-bg-secondary: #2C2C2E;
+    --amber-accent-primary: #FF9F0A;
+    --amber-accent-secondary: #FFB340;
+    --amber-accent-primary-rgb: 255, 159, 10;
+    --amber-gradient-primary: linear-gradient(135deg, #FF9F0A 0%, #FFB340 100%);
+    --amber-gradient-secondary: linear-gradient(135deg, #FFB340 0%, #FF9F0A 100%);
+
+    /* White Theme */
+    --white-bg-primary: #000000;
+    --white-bg-secondary: #1C1C1E;
+    --white-accent-primary: #FFFFFF;
+    --white-accent-secondary: #A8A8A8;
+    --white-accent-primary-rgb: 255, 255, 255;
+    --white-gradient-primary: linear-gradient(135deg, #FFFFFF 0%, #A8A8A8 100%);
+    --white-gradient-secondary: linear-gradient(135deg, #A8A8A8 0%, #FFFFFF 100%);
+}
+
+/* Theme Classes */
+.theme-purple {
+    --bg-primary: var(--purple-bg-primary);
+    --bg-secondary: var(--purple-bg-secondary);
+    --accent-primary: var(--purple-accent-primary);
+    --accent-secondary: var(--purple-accent-secondary);
+    --accent-primary-rgb: var(--purple-accent-primary-rgb);
+    --gradient-primary: var(--purple-gradient-primary);
+    --gradient-secondary: var(--purple-gradient-secondary);
+}
+
+.theme-amber {
+    --bg-primary: var(--amber-bg-primary);
+    --bg-secondary: var(--amber-bg-secondary);
+    --accent-primary: var(--amber-accent-primary);
+    --accent-secondary: var(--amber-accent-secondary);
+    --accent-primary-rgb: var(--amber-accent-primary-rgb);
+    --gradient-primary: var(--amber-gradient-primary);
+    --gradient-secondary: var(--amber-gradient-secondary);
+}
+
+.theme-white {
+    --bg-primary: var(--white-bg-primary);
+    --bg-secondary: var(--white-bg-secondary);
+    --accent-primary: var(--white-accent-primary);
+    --accent-secondary: var(--white-accent-secondary);
+    --accent-primary-rgb: var(--white-accent-primary-rgb);
+    --gradient-primary: var(--white-gradient-primary);
+    --gradient-secondary: var(--white-gradient-secondary);
+}
