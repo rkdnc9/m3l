@@ -9,7 +9,8 @@
     <meta http-equiv="Content-Security-Policy" content="script-src 'self' 'unsafe-eval' 'unsafe-inline' blob:;">
     <title>M3L</title>
     <link rel="stylesheet" href="/src/styles.css">
-    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <!-- Remove or comment out the IBM Plex Mono font -->
+    <!-- <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet"> -->
 </head>
 
 <body>
@@ -27,30 +28,47 @@
                 </ul>
             </div>
         </div>
-        <div class="input-section">
-            <div class="api-key-section">
-                <input type="password" id="api-key" placeholder="Enter OpenAI/Claude API Key">
-                <select id="api-provider">
-                    <option value="openai">OpenAI</option>
-                    <option value="claude">Claude</option>
-                </select>
+
+        <div class="main-content">
+            <div class="input-panel">
+                <div class="input-section">
+                    <div class="api-key-section">
+                        <input type="password" id="api-key" placeholder="Enter OpenAI/Claude API Key">
+                        <select id="api-provider">
+                            <option value="openai">OpenAI</option>
+                            <option value="claude">Claude</option>
+                        </select>
+                    </div>
+
+                    <div class="file-section">
+                        <input type="file" id="file-input" accept=".csv,.json">
+                        <button id="upload-btn">LOAD FILE</button>
+                    </div>
+
+                    <div class="query-section">
+                        <textarea id="nl-query" placeholder="Enter your question in natural language"></textarea>
+                        <button id="submit-query">ASK M3L</button>
+                    </div>
+                </div>
             </div>
 
-            <div class="file-section">
-                <input type="file" id="file-input" accept=".csv,.json">
-                <button id="upload-btn">LOAD FILE</button>
+            <div class="results-panel">
+                <div class="results-section">
+                    <div class="table-container">
+                        <div id="results-table"></div>
+                    </div>
+                    <div class="status-bar">
+                        Ready to analyze your data
+                    </div>
+                </div>
             </div>
-
-            <div class="query-section">
-                <textarea id="nl-query" placeholder="Enter your question in natural language"></textarea>
-                <button id="submit-query">ASK M3L</button>
-            </div>
-        </div>
-
-        <div class="results-section">
-            <div id="results-table"></div>
         </div>
     </div>
+
+    <!-- Mobile floating action button -->
+    <button class="mobile-query-fab" id="mobile-query-btn">
+        Ask Query
+    </button>
     <script type="module" src="/src/main.ts"></script>
 </body>
 
