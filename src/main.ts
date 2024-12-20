@@ -21,8 +21,13 @@ class App {
         const submitBtn = document.getElementById('submit-query') as HTMLButtonElement;
         const apiKeyInput = document.getElementById('api-key') as HTMLInputElement;
         const providerSelect = document.getElementById('api-provider') as HTMLSelectElement;
+        const fileInput = document.getElementById('file-input') as HTMLInputElement;
+        const fileSection = document.querySelector('.file-section') as HTMLElement;
+        const fileName = document.querySelector('.file-name') as HTMLElement;
 
-        uploadBtn.addEventListener('click', () => this.handleFileUpload());
+        uploadBtn.addEventListener('click', () => {
+            fileInput.click();
+        });
         submitBtn.addEventListener('click', () => this.handleQuery());
         
         // Update LLM handler immediately if API key is present
@@ -83,25 +88,27 @@ class App {
                 helpModal?.setAttribute('hidden', '');
             }
         });
-    }
 
-    private async handleFileUpload() {
-        const fileInput = document.getElementById('file-input') as HTMLInputElement;
-        const file = fileInput.files?.[0];
-        const filename = fileInput.files?.[0].name;
-        
-        if (!file) {
-            this.showToast('Please select a file');
-            return;
-        }
-
-        try {
-            this.schema = await this.duckdb.loadFile(file);
-            this.showToast(`File ${filename} loaded successfully!`);
-        } catch (error) {
-            this.showToast(`Error loading file: ${error}`);
-            console.error('File loading error:', error);
-        }
+        // Handle file selection
+        fileInput.addEventListener('change', async (event) => {
+            const target = event.target as HTMLInputElement;
+            if (target.files && target.files[0]) {
+                try {
+                    this.schema = await this.duckdb.loadFile(target.files[0]);
+                    fileName.textContent = target.files[0].name;
+                    fileSection.classList.add('has-file');
+                    this.showToast('File loaded successfully');
+                } catch (error) {
+                    fileName.textContent = 'No file selected';
+                    fileSection.classList.remove('has-file');
+                    this.showToast(`Error loading file: ${error}`);
+                    console.error('File loading error:', error);
+                }
+            } else {
+                fileName.textContent = 'No file selected';
+                fileSection.classList.remove('has-file');
+            }
+        });
     }
 
     private async handleQuery() {
