@@ -15,23 +15,15 @@
 
 <body>
     <div class="container">
-        <div class="terminal-header">
-            <h1>👋 I'm M3L</h1>
-            <div class="header-content">
-                <p>Your personal AI data analyst. Here's how it works:</p>
-                <ul class="feature-list">
-                    <li>Load your data file securely</li>
-                    <li>Connect with your AI service provider</li>
-                    <li>Ask questions about your data</li>
-                    <li>All analysis happens right on your computer</li>
-                    <li>Only basic data structure is shared with your AI provider, never your actual data</li>
-                </ul>
-            </div>
-        </div>
-
         <div class="main-content">
+            <!-- Left Panel -->
             <div class="input-panel">
                 <div class="input-section">
+                    <!-- Help Icon -->
+                    <div class="help-trigger">
+                        <button class="help-icon" aria-label="Show Help">?</button>
+                    </div>
+
                     <div class="api-key-section">
                         <input type="password" id="api-key" placeholder="Enter OpenAI/Claude API Key">
                         <select id="api-provider">
@@ -46,21 +38,35 @@
                     </div>
 
                     <div class="query-section">
-                        <textarea id="nl-query" placeholder="Enter your question in natural language"></textarea>
+                        <textarea id="nl-query" placeholder="Ask a question about your data..."></textarea>
                         <button id="submit-query">ASK M3L</button>
                     </div>
                 </div>
             </div>
 
+            <!-- Right Panel -->
             <div class="results-panel">
                 <div class="results-section">
-                    <div class="table-container">
-                        <div id="results-table"></div>
-                    </div>
-                    <div class="status-bar">
-                        Ready to analyze your data
+                    <div class="results-container">
+                        <!-- Individual result blocks will be added here -->
                     </div>
                 </div>
+            </div>
+        </div>
+
+        <!-- Help Modal -->
+        <div class="help-modal" hidden>
+            <div class="help-content">
+                <button class="close-help">×</button>
+                <h1>👋 I'm M3L</h1>
+                <p>Your personal AI data analyst. Here's how it works:</p>
+                <ul class="feature-list">
+                    <li>Load your data file securely</li>
+                    <li>Connect with your AI service provider</li>
+                    <li>Ask questions about your data</li>
+                    <li>All analysis happens right on your computer</li>
+                    <li>Only basic data structure is shared with your AI provider</li>
+                </ul>
             </div>
         </div>
     </div>

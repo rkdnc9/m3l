@@ -54,6 +54,35 @@ class App {
                 );
             }
         });
+
+        // Help modal functionality
+        const helpIcon = document.querySelector('.help-icon') as HTMLButtonElement;
+        const helpModal = document.querySelector('.help-modal') as HTMLDivElement;
+        const closeHelp = document.querySelector('.close-help') as HTMLButtonElement;
+
+        // Show modal on help icon click
+        helpIcon?.addEventListener('click', () => {
+            helpModal?.removeAttribute('hidden');
+        });
+
+        // Close modal on close button click
+        closeHelp?.addEventListener('click', () => {
+            helpModal?.setAttribute('hidden', '');
+        });
+
+        // Close modal on backdrop click
+        helpModal?.addEventListener('click', (e) => {
+            if (e.target === helpModal) {
+                helpModal.setAttribute('hidden', '');
+            }
+        });
+
+        // Close modal on escape key
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && !helpModal?.hasAttribute('hidden')) {
+                helpModal?.setAttribute('hidden', '');
+            }
+        });
     }
 
     private async handleFileUpload() {
@@ -97,38 +126,53 @@ class App {
         try {
             const sqlQuery = await this.llm.getNLToSQL(this.schema, query);
             const results = await this.duckdb.executeQuery(sqlQuery);
-            this.displayResults(results);
+            
+            // Create and add the result block
+            const resultsContainer = document.querySelector('.results-container');
+            if (!resultsContainer) {
+                console.error('Results container not found');
+                return;
+            }
+
+            const resultBlock = document.createElement('div');
+            resultBlock.className = 'result-block';
+            
+            // Add the query
+            const queryDisplay = document.createElement('div');
+            queryDisplay.className = 'query-display';
+            queryDisplay.textContent = `Q: ${query}`;
+            resultBlock.appendChild(queryDisplay);
+            
+            // Add the results table
+            if (results.length > 0) {
+                const table = this.createResultsTable(results);
+                resultBlock.appendChild(table);
+            } else {
+                const noResults = document.createElement('p');
+                noResults.textContent = 'No results found';
+                resultBlock.appendChild(noResults);
+            }
+            
+            // Add to container
+            resultsContainer.appendChild(resultBlock);
+            
+            // Scroll to bottom
+            resultsContainer.scrollTop = resultsContainer.scrollHeight;
+
+            // Clear the query input
+            queryInput.value = '';
+            
         } catch (error) {
             this.showToast(`Error executing query: ${error}`);
             console.error('Query execution error:', error);
         }
     }
 
-    private showToast(message: string) {
-        const toast = document.createElement('div');
-        toast.className = 'toast';
-        toast.textContent = message;
-        document.body.appendChild(toast);
-        
-        // Remove toast after animation
-        setTimeout(() => {
-            toast.remove();
-        }, 4000); // Matches the duration of the fade-out animation
-    }
-
-    private displayResults(results: any[]) {
-        const resultsDiv = document.getElementById('results-table');
-        if (!resultsDiv || results.length === 0) {
-            if (resultsDiv) {
-                resultsDiv.innerHTML = '<p>No results found</p>';
-            }
-            return;
-        }
-
-        const headers = Object.keys(results[0]);
+    private createResultsTable(results: any[]): HTMLTableElement {
         const table = document.createElement('table');
         
         // Create header row
+        const headers = Object.keys(results[0]);
         const headerRow = document.createElement('tr');
         headers.forEach(header => {
             const th = document.createElement('th');
@@ -148,8 +192,19 @@ class App {
             table.appendChild(tr);
         });
 
-        resultsDiv.innerHTML = '';
-        resultsDiv.appendChild(table);
+        return table;
+    }
+
+    private showToast(message: string) {
+        const toast = document.createElement('div');
+        toast.className = 'toast';
+        toast.textContent = message;
+        document.body.appendChild(toast);
+        
+        // Remove toast after animation
+        setTimeout(() => {
+            toast.remove();
+        }, 4000); // Matches the duration of the fade-out animation
     }
 }
 
