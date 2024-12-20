@@ -203,15 +203,21 @@ class App {
     }
 
     private showToast(message: string) {
+        // Remove existing toast if present
+        const existingToast = document.querySelector('.toast');
+        if (existingToast) {
+            existingToast.remove();
+        }
+
         const toast = document.createElement('div');
         toast.className = 'toast';
         toast.textContent = message;
         document.body.appendChild(toast);
-        
-        // Remove toast after animation
+
+        // Remove toast after animation completes
         setTimeout(() => {
             toast.remove();
-        }, 4000); // Matches the duration of the fade-out animation
+        }, 3000);
     }
 }
 

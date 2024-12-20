@@ -640,29 +640,42 @@ button:disabled {
 /* Toast notification styling */
 .toast {
     position: fixed;
-    bottom: 20px;
-    right: 20px;
-    background: rgba(28, 28, 30, 0.9);
-    color: var(--text-primary);
-    border: 1px solid var(--border-color);
-    padding: 16px 24px;
-    border-radius: 14px;
+    top: 24px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--gradient-primary);
+    color: white;
+    padding: 12px 24px;
+    border-radius: 12px;
     z-index: 1000;
     font-family: var(--font-mono);
-    animation: toast-in 0.3s ease-out;
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
+    font-size: 14px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+    border: none;
+    animation: toast-slide-down 0.3s ease-out, toast-fade-out 0.3s ease-in 2.7s;
+    min-width: 200px;
+    text-align: center;
 }
 
-@keyframes toast-in {
+@keyframes toast-slide-down {
     from {
-        transform: translateY(100px);
+        transform: translate(-50%, -100%);
         opacity: 0;
     }
     to {
-        transform: translateY(0);
+        transform: translate(-50%, 0);
         opacity: 1;
+    }
+}
+
+@keyframes toast-fade-out {
+    from {
+        transform: translate(-50%, 0);
+        opacity: 1;
+    }
+    to {
+        transform: translate(-50%, -20px);
+        opacity: 0;
     }
 }
 
