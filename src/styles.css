@@ -14,6 +14,7 @@
     
     --shadow-soft: 0 8px 32px rgba(0, 0, 0, 0.2);
     --shadow-sharp: 0 2px 4px rgba(0, 0, 0, 0.1), 0 8px 16px rgba(0, 0, 0, 0.1);
+    --font-mono: Menlo, Monaco, "SF Mono", monospace;
 }
 
 * {
@@ -23,7 +24,7 @@
 }
 
 body {
-    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", sans-serif;
+    font-family: var(--font-mono);
     background: var(--bg-primary);
     color: var(--text-primary);
     display: flex;
@@ -119,6 +120,7 @@ body {
     padding: 24px;
     scrollbar-width: thin;
     scrollbar-color: rgba(189, 90, 242, 0.3) transparent;
+    font-family: var(--font-mono);
 }
 
 /* For Webkit browsers (Chrome, Safari, etc.) */
@@ -156,6 +158,7 @@ body {
     margin-bottom: 16px;
     padding-bottom: 12px;
     border-bottom: 1px solid var(--border-color);
+    font-family: var(--font-mono);
 }
 
 /* Help Modal */
@@ -189,6 +192,7 @@ body {
     border: 1px solid var(--border-color);
     box-shadow: var(--shadow-sharp);
     animation: modal-in 0.3s ease-out;
+    font-family: var(--font-mono);
 }
 
 .close-help {
@@ -454,6 +458,7 @@ body {
     overflow: hidden;
     text-overflow: ellipsis;
     max-width: 200px;
+    font-family: var(--font-mono);
 }
 
 /* When file is selected */
@@ -471,7 +476,7 @@ select {
     color: var(--text-primary);
     border: 1px solid var(--border-color);
     border-radius: 12px;
-    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", sans-serif;
+    font-family: var(--font-mono);
     font-size: 15px;
     margin-bottom: 12px;
     transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
@@ -502,7 +507,7 @@ select {
 
 /* Base button styles */
 button {
-    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", sans-serif;
+    font-family: var(--font-mono);
     font-size: 14px;
     font-weight: 500;
     padding: 12px 20px;
@@ -643,7 +648,7 @@ button:disabled {
     padding: 16px 24px;
     border-radius: 14px;
     z-index: 1000;
-    font-family: inherit;
+    font-family: var(--font-mono);
     animation: toast-in 0.3s ease-out;
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
     backdrop-filter: blur(20px);
