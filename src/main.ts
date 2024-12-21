@@ -1,5 +1,6 @@
 import { DuckDBHandler } from './duckdb';
 import { LLMHandler } from './llm';
+import html2pdf from 'html2pdf.js';
 
 class App {
     private duckdb: DuckDBHandler;
@@ -145,6 +146,11 @@ class App {
                 submitButton.click(); // Trigger the button click event
             }
         });
+
+        const exportButton = document.getElementById('export-pdf');
+        if (exportButton) {
+            exportButton.addEventListener('click', () => this.exportToPDF());
+        }
     }
 
     private async handleQuery() {
@@ -311,6 +317,94 @@ class App {
                 localStorage.setItem('theme', theme);
             });
         });
+    }
+
+    private async exportToPDF() {
+        const resultsContainer = document.querySelector('.results-container');
+        if (!resultsContainer) return;
+
+        // Create a clone of the results for PDF generation
+        const clone = resultsContainer.cloneNode(true) as HTMLElement;
+        
+        // Apply PDF-specific styling
+        const style = document.createElement('style');
+        style.textContent = `
+            table {
+                width: 100%;
+                border-collapse: collapse;
+                margin-top: 20px;
+                font-size: 12px;
+            }
+            th, td {
+                padding: 8px;
+                text-align: left;
+                border: 1px solid #ddd;
+            }
+            th {
+                background-color: #f5f5f5;
+            }
+            .query-display {
+                font-size: 14px;
+                margin-bottom: 16px;
+                padding-bottom: 12px;
+                border-bottom: 1px solid #ddd;
+            }
+        `;
+        clone.prepend(style);
+
+        // Configure PDF options
+        const opt = {
+            margin: [10, 10],
+            filename: 'query-results.pdf',
+            image: { type: 'jpeg', quality: 0.98 },
+            html2canvas: { 
+                scale: 2,
+                useCORS: true,
+                logging: false
+            },
+            jsPDF: { 
+                unit: 'mm', 
+                format: 'a4', 
+                orientation: 'portrait' 
+            }
+        };
+
+        try {
+            // Show loading state
+            const exportButton = document.getElementById('export-pdf');
+            if (exportButton) {
+                exportButton.disabled = true;
+                exportButton.textContent = 'Exporting...';
+            }
+
+            // Generate PDF
+            await html2pdf().from(clone).set(opt).save();
+
+            // Reset button state
+            if (exportButton) {
+                exportButton.disabled = false;
+                exportButton.innerHTML = `
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z" fill="currentColor"/>
+                    </svg>
+                    Export PDF
+                `;
+            }
+        } catch (error) {
+            console.error('PDF export failed:', error);
+            // Reset button state
+            if (exportButton) {
+                exportButton.disabled = false;
+                exportButton.innerHTML = `
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z" fill="currentColor"/>
+                    </svg>
+                    Export PDF
+                `;
+            }
+            // Show error toast
+            this.showToast('Failed to export PDF. Please try again.');
+        }
     }
 }
 

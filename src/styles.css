@@ -1401,3 +1401,42 @@ body.theme-white .table-container::-webkit-scrollbar-thumb:hover {
 .table-container::-webkit-scrollbar-thumb {
     border-radius: 4px;
 }
+
+.results-actions {
+    padding: 12px 24px;
+    border-bottom: 1px solid var(--border-color);
+    display: flex;
+    justify-content: flex-end;
+}
+
+.export-button {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+    padding: 8px 16px;
+    background: rgba(var(--accent-primary-rgb), 0.1);
+    border: 1px solid rgba(var(--accent-primary-rgb), 0.2);
+    color: var(--accent-primary);
+}
+
+.export-button:hover {
+    background: rgba(var(--accent-primary-rgb), 0.15);
+    border-color: rgba(var(--accent-primary-rgb), 0.3);
+}
+
+.export-button svg {
+    width: 16px;
+    height: 16px;
+}
+
+/* Theme-specific button styles */
+.theme-white .export-button {
+    background: var(--bg-secondary);
+    border-color: var(--border-color);
+}
+
+.theme-white .export-button:hover {
+    background: var(--bg-primary);
+    border-color: var(--accent-primary);
+}

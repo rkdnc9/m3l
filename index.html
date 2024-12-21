@@ -11,6 +11,7 @@
     <link rel="stylesheet" href="/src/styles.css">
     <!-- Remove or comment out the IBM Plex Mono font -->
     <!-- <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet"> -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 </head>
 
 <body>
@@ -65,6 +66,14 @@
             <!-- Right Panel -->
             <div class="results-panel">
                 <div class="results-section">
+                    <div class="results-actions">
+                        <button id="export-pdf" class="export-button" title="Export as PDF">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z" fill="currentColor"/>
+                            </svg>
+                            Export PDF
+                        </button>
+                    </div>
                     <div class="results-container">
                         <!-- Individual result blocks will be added here -->
                     </div>
