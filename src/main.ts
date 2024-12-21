@@ -302,19 +302,22 @@ class App {
 
         colorOptions.forEach(option => {
             option.addEventListener('click', (e) => {
-                const theme = (e.currentTarget as HTMLElement).dataset.theme;
+                const target = e.currentTarget as HTMLElement;
+                const theme = target.dataset.theme;
                 
                 // Remove active class from all options
                 colorOptions.forEach(opt => opt.classList.remove('active'));
                 
                 // Add active class to selected option
-                e.currentTarget.classList.add('active');
+                target.classList.add('active');
                 
                 // Apply theme
                 body.className = `theme-${theme}`;
                 
                 // Save theme preference
-                localStorage.setItem('theme', theme);
+                if (theme) {
+                    localStorage.setItem('theme', theme);
+                }
             });
         });
     }
@@ -382,7 +385,7 @@ class App {
 
         try {
             // Show loading state
-            const exportButton = document.getElementById('export-pdf');
+            const exportButton = document.getElementById('export-pdf') as HTMLButtonElement;
             if (exportButton) {
                 exportButton.disabled = true;
                 exportButton.textContent = 'Exporting...';
@@ -403,7 +406,7 @@ class App {
             }
         } catch (error) {
             console.error('PDF export failed:', error);
-            // Reset button state
+            const exportButton = document.getElementById('export-pdf') as HTMLButtonElement;
             if (exportButton) {
                 exportButton.disabled = false;
                 exportButton.innerHTML = `
@@ -413,7 +416,6 @@ class App {
                     Export PDF
                 `;
             }
-            // Show error toast
             this.showToast('Failed to export PDF. Please try again.');
         }
     }
