@@ -111,6 +111,40 @@ class App {
                 fileSection.classList.remove('has-file');
             }
         });
+
+        const textarea = document.getElementById('nl-query') as HTMLTextAreaElement;
+        const shortcutCheckbox = document.getElementById('enable-shortcut') as HTMLInputElement;
+        const submitButton = document.getElementById('submit-query') as HTMLButtonElement;
+        
+        // Save checkbox state to localStorage
+        shortcutCheckbox.addEventListener('change', () => {
+            localStorage.setItem('enableShortcut', shortcutCheckbox.checked.toString());
+        });
+
+        // Load saved checkbox state
+        const savedShortcutState = localStorage.getItem('enableShortcut');
+        if (savedShortcutState !== null) {
+            shortcutCheckbox.checked = savedShortcutState === 'true';
+        }
+
+        // Handle keyboard shortcuts
+        textarea.addEventListener('keydown', async (e) => {
+            if (!shortcutCheckbox.checked) return;
+            
+            const isMac = navigator.platform.toUpperCase().indexOf('MAC') >= 0;
+            
+            // Check for both Command+Enter (Mac) and Ctrl+Enter (Windows)
+            // Also allow plain Enter if checkbox is checked
+            const shouldTrigger = e.key === 'Enter' && (
+                (!isMac && !e.shiftKey) || // Windows/Linux: Enter without shift
+                (isMac && (e.metaKey || !e.shiftKey)) // Mac: Command+Enter or Enter without shift
+            );
+
+            if (shouldTrigger) {
+                e.preventDefault();
+                submitButton.click(); // Trigger the button click event
+            }
+        });
     }
 
     private async handleQuery() {

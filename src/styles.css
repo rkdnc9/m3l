@@ -1172,3 +1172,231 @@ select:hover {
 .theme-white .results-section tr:last-child td {
     border-bottom: none;
 }
+.query-options {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 8px;
+    padding: 0 4px;
+}
+
+.shortcut-option {
+    display: flex;
+    gap: 6px;
+    font-size: 12px;
+    color: var(--text-secondary);
+    cursor: pointer;
+    margin-right: auto;
+}
+
+.shortcut-option input[type="checkbox"] {
+    width: 14px;
+    height: 14px;
+    margin: 0;
+    cursor: pointer;
+    accent-color: var(--accent-primary);
+}
+
+.checkbox-text {
+    user-select: none;
+}
+
+.query-section {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.query-options {
+    display: flex;
+    align-items: center;
+    margin: -4px 0;
+    padding: 0 2px;
+}
+
+.shortcut-option {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    color: var(--text-secondary);
+    cursor: pointer;
+}
+
+.shortcut-option input[type="checkbox"] {
+    width: 13px;
+    height: 13px;
+    margin: 0;
+    cursor: pointer;
+    accent-color: var(--accent-primary);
+}
+
+#nl-query {
+    margin: 0;
+}
+
+#submit-query {
+    margin: 0;
+}
+
+/* Scrollbar styling for each theme */
+.theme-purple {
+    --scrollbar-thumb: rgba(189, 0, 255, 0.3);
+    --scrollbar-thumb-hover: rgba(189, 0, 255, 0.5);
+    --row-hover-bg: rgba(189, 0, 255, 0.05);
+}
+
+.theme-amber {
+    --scrollbar-thumb: rgba(255, 159, 10, 0.3);
+    --scrollbar-thumb-hover: rgba(255, 159, 10, 0.5);
+    --row-hover-bg: rgba(255, 159, 10, 0.05);
+}
+
+.theme-white {
+    --scrollbar-thumb: rgba(0, 0, 0, 0.2);
+    --scrollbar-thumb-hover: rgba(0, 0, 0, 0.3);
+    --row-hover-bg: var(--bg-secondary);
+}
+
+/* Scrollbar styling */
+.results-panel::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+.results-panel::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.results-panel::-webkit-scrollbar-thumb {
+    background: var(--scrollbar-thumb);
+    border-radius: 4px;
+}
+
+.results-panel::-webkit-scrollbar-thumb:hover {
+    background: var(--scrollbar-thumb-hover);
+}
+
+/* Table row hover styling */
+.results-section tr:hover td {
+    background: var(--row-hover-bg);
+}
+
+/* Theme-specific scrollbar and hover styles */
+.theme-purple .results-panel::-webkit-scrollbar-thumb {
+    background: rgba(189, 0, 255, 0.3);
+}
+
+.theme-purple .results-panel::-webkit-scrollbar-thumb:hover {
+    background: rgba(189, 0, 255, 0.5);
+}
+
+.theme-amber .results-panel::-webkit-scrollbar-thumb {
+    background: rgba(255, 159, 10, 0.3);
+}
+
+.theme-amber .results-panel::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 159, 10, 0.5);
+}
+
+.theme-white .results-panel::-webkit-scrollbar-thumb {
+    background: rgba(0, 0, 0, 0.2);
+}
+
+.theme-white .results-panel::-webkit-scrollbar-thumb:hover {
+    background: rgba(0, 0, 0, 0.3);
+}
+
+/* Common scrollbar styles */
+.results-panel::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+.results-panel::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.results-panel::-webkit-scrollbar-thumb {
+    border-radius: 4px;
+}
+
+/* Scrollbar base styles */
+.results-panel::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+.results-panel::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+/* Theme-specific scrollbar styles with higher specificity */
+body.theme-purple .results-panel::-webkit-scrollbar-thumb {
+    background: rgba(189, 0, 255, 0.3) !important;
+}
+
+body.theme-purple .results-panel::-webkit-scrollbar-thumb:hover {
+    background: rgba(189, 0, 255, 0.5) !important;
+}
+
+body.theme-amber .results-panel::-webkit-scrollbar-thumb {
+    background: rgba(255, 159, 10, 0.3) !important;
+}
+
+body.theme-amber .results-panel::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 159, 10, 0.5) !important;
+}
+
+body.theme-white .results-panel::-webkit-scrollbar-thumb {
+    background: rgba(0, 0, 0, 0.2) !important;
+}
+
+body.theme-white .results-panel::-webkit-scrollbar-thumb:hover {
+    background: rgba(0, 0, 0, 0.3) !important;
+}
+
+/* Common scrollbar properties */
+.results-panel::-webkit-scrollbar-thumb {
+    border-radius: 4px;
+}
+
+/* Results table container scrollbar styles */
+.table-container::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+.table-container::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+/* Theme-specific scrollbar styles for table container */
+body.theme-purple .table-container::-webkit-scrollbar-thumb {
+    background: rgba(189, 0, 255, 0.3) !important;
+}
+
+body.theme-purple .table-container::-webkit-scrollbar-thumb:hover {
+    background: rgba(189, 0, 255, 0.5) !important;
+}
+
+body.theme-amber .table-container::-webkit-scrollbar-thumb {
+    background: rgba(255, 159, 10, 0.3) !important;
+}
+
+body.theme-amber .table-container::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 159, 10, 0.5) !important;
+}
+
+body.theme-white .table-container::-webkit-scrollbar-thumb {
+    background: rgba(0, 0, 0, 0.2) !important;
+}
+
+body.theme-white .table-container::-webkit-scrollbar-thumb:hover {
+    background: rgba(0, 0, 0, 0.3) !important;
+}
+
+/* Common scrollbar properties */
+.table-container::-webkit-scrollbar-thumb {
+    border-radius: 4px;
+}
