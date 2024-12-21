@@ -709,7 +709,6 @@ textarea:focus,
 select:focus,
 button:focus {
     outline: none;
-    box-shadow: 0 0 5px rgba(0, 255, 0, 0.5);
 }
 
 /* Media queries for responsiveness */
