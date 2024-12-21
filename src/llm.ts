@@ -23,6 +23,8 @@ export class LLMHandler {
         1. The table name is 'data_table'
         2. Always use 'data_table' as the table name in your SQL query
         3. Return only the SQL query, no explanations
+        4. If the query is not possible, return an empty string
+        5. Use the correct data types for the columns
         
         Generate SQL query for this question: ${query}`;
         

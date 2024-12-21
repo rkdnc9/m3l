@@ -9,48 +9,100 @@
     <meta http-equiv="Content-Security-Policy" content="script-src 'self' 'unsafe-eval' 'unsafe-inline' blob:;">
     <title>M3L</title>
     <link rel="stylesheet" href="/src/styles.css">
-    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <!-- Remove or comment out the IBM Plex Mono font -->
+    <!-- <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet"> -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 </head>
 
 <body>
     <div class="container">
-        <div class="terminal-header">
-            <h1>👋 I'm M3L</h1>
-            <div class="header-content">
+        <div class="main-content">
+            <!-- Left Panel -->
+            <div class="input-panel">
+                <div class="input-section">
+                    <!-- Help Icon -->
+                    <div class="theme-help-section">
+                        <h1 class="app-title">M3L</h1>
+                        <div class="color-selector">
+                            <button class="color-option purple" data-theme="purple" title="Purple Theme">
+                                <span class="color-dot"></span>
+                            </button>
+                            <button class="color-option amber" data-theme="amber" title="Amber Theme">
+                                <span class="color-dot"></span>
+                            </button>
+                            <button class="color-option white" data-theme="white" title="White Theme">
+                                <span class="color-dot"></span>
+                            </button>
+                        </div>
+                        <button class="help-icon" aria-label="Show Help">?</button>
+                    </div>
+
+                    <div class="api-key-section">
+                        <input type="password" id="api-key" placeholder="Enter OpenAI/Claude API Key">
+                        <select id="api-provider">
+                            <option value="openai">OpenAI</option>
+                            <option value="claude">Claude</option>
+                        </select>
+                    </div>
+
+                    <div class="file-section">
+                        <button id="upload-btn">Select File</button>
+                        <input type="file" id="file-input" accept=".csv,.json">
+                        <span class="file-name">No file selected</span>
+                    </div>
+
+                    <div class="query-section">
+                        <textarea id="nl-query" placeholder="Ask a question about your data..."></textarea>
+                        <div class="query-options">
+                            <label class="shortcut-option">
+                                <input type="checkbox" id="enable-shortcut" checked>
+                                <span class="checkbox-text">Use ⌘/Enter to ask question</span>
+                            </label>
+                        </div>
+                        <button id="submit-query">Ask Question</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Panel -->
+            <div class="results-panel">
+                <div class="results-section">
+                    <div class="results-actions">
+                        <button id="export-pdf" class="export-button" title="Export as PDF">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z" fill="currentColor"/>
+                            </svg>
+                            Export PDF
+                        </button>
+                    </div>
+                    <div class="results-container">
+                        <!-- Individual result blocks will be added here -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Help Modal -->
+        <div class="help-modal" hidden>
+            <div class="help-content">
+                <button class="close-help">×</button>
+                <h1>👋 I'm M3L</h1>
                 <p>Your personal AI data analyst. Here's how it works:</p>
                 <ul class="feature-list">
                     <li>Load your data file securely</li>
                     <li>Connect with your AI service provider</li>
                     <li>Ask questions about your data</li>
                     <li>All analysis happens right on your computer</li>
-                    <li>Only basic data structure is shared with your AI provider, never your actual data</li>
+                    <li>Only basic data structure is shared with your AI provider</li>
                 </ul>
             </div>
         </div>
-        <div class="input-section">
-            <div class="api-key-section">
-                <input type="password" id="api-key" placeholder="Enter OpenAI/Claude API Key">
-                <select id="api-provider">
-                    <option value="openai">OpenAI</option>
-                    <option value="claude">Claude</option>
-                </select>
-            </div>
-
-            <div class="file-section">
-                <input type="file" id="file-input" accept=".csv,.json">
-                <button id="upload-btn">LOAD FILE</button>
-            </div>
-
-            <div class="query-section">
-                <textarea id="nl-query" placeholder="Enter your question in natural language"></textarea>
-                <button id="submit-query">ASK M3L</button>
-            </div>
-        </div>
-
-        <div class="results-section">
-            <div id="results-table"></div>
-        </div>
     </div>
+
+    <!-- Mobile floating action button -->
+    <button class="mobile-query-fab" id="mobile-query-btn">
+        Ask Query
+    </button>
     <script type="module" src="/src/main.ts"></script>
 </body>
 
