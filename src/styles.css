@@ -802,6 +802,8 @@ button:focus {
     align-items: center;
     gap: 12px;
     align-self: flex-end;
+    width: 100%;
+    margin-bottom: 24px;
 }
 
 .color-selector {
@@ -1439,4 +1441,32 @@ body.theme-white .table-container::-webkit-scrollbar-thumb:hover {
 .theme-white .export-button:hover {
     background: var(--bg-primary);
     border-color: var(--accent-primary);
+}
+
+.app-title {
+    font-family: var(--font-mono);
+    font-size: 24px;
+    font-weight: 500;
+    letter-spacing: 1px;
+    color: var(--accent-primary);
+    opacity: 0.9;
+    margin-right: auto;
+}
+
+/* Theme-specific glow effects */
+.theme-purple .app-title {
+    text-shadow: 0 0 20px rgba(189, 0, 255, 0.2);
+}
+
+.theme-amber .app-title {
+    text-shadow: 0 0 20px rgba(255, 159, 10, 0.2);
+}
+
+.theme-white .app-title {
+    text-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+}
+
+/* Remove the underline effect since it's now inline */
+.app-title::after {
+    display: none;
 }
