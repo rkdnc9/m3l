@@ -1,6 +1,57 @@
 import { DuckDBHandler } from './duckdb';
 import { LLMHandler } from './llm';
 import html2pdf from 'html2pdf.js';
+import { detectVisualizationIntent } from './utils/visualizationUtils';
+import { Chart as ChartJS } from 'chart.js/auto';
+import {
+    CategoryScale,
+    LinearScale,
+    BarElement,
+    LineElement,
+    PointElement,
+    Title,
+    Tooltip,
+    Legend
+} from 'chart.js';
+
+// Register Chart.js components
+ChartJS.register(
+    CategoryScale,
+    LinearScale,
+    BarElement,
+    LineElement,
+    PointElement,
+    Title,
+    Tooltip,
+    Legend
+);
+
+// Add this function at the top level of your file, before any other functions
+function getThemeColor(): { primary: string; background: string } {
+    // Look for the active theme button instead of data-theme attribute
+    const activeThemeButton = document.querySelector('.color-option.active');
+    const theme = activeThemeButton?.getAttribute('data-theme') || 'purple';
+    console.log('Current theme:', theme);
+
+    const themeColors = {
+        'purple': {
+            primary: 'rgb(149, 76, 233)',
+            background: 'rgba(149, 76, 233, 0.2)'
+        },
+        'amber': {
+            primary: 'rgb(251, 191, 36)',
+            background: 'rgba(251, 191, 36, 0.2)'
+        },
+        'white': {
+            primary: 'rgb(107, 114, 128)',
+            background: 'rgba(107, 114, 128, 0.2)'
+        }
+    };
+    
+    const colors = themeColors[theme as keyof typeof themeColors] || themeColors.purple;
+    console.log('Using colors:', colors);
+    return colors;
+}
 
 class App {
     private duckdb: DuckDBHandler;
@@ -173,39 +224,123 @@ class App {
         }
 
         try {
+            const shouldVisualize = detectVisualizationIntent(query);
+            console.log('Question:', query);
+            console.log('Should visualize:', shouldVisualize);
+
             const sqlQuery = await this.llm.getNLToSQL(this.schema, query);
+            console.log('SQL Query:', sqlQuery);
+
             const results = await this.duckdb.executeQuery(sqlQuery);
-            
-            // Create and add the result block
+            console.log('Query Results:', results);
+
             const resultsContainer = document.querySelector('.results-container');
             if (!resultsContainer) {
                 console.error('Results container not found');
                 return;
             }
 
+            // Create a new result block
             const resultBlock = document.createElement('div');
             resultBlock.className = 'result-block';
-            
-            // Add the query
-            const queryDisplay = document.createElement('div');
-            queryDisplay.className = 'query-display';
-            queryDisplay.textContent = `Q: ${query}`;
-            resultBlock.appendChild(queryDisplay);
-            
-            // Add the results table
-            if (results.length > 0) {
+
+            // Add question display
+            const questionDisplay = document.createElement('div');
+            questionDisplay.className = 'question-display';
+            questionDisplay.textContent = query;
+            resultBlock.appendChild(questionDisplay);
+
+            if (shouldVisualize) {
+                console.log('Attempting to create visualization...');
+                
+                // Create canvas for chart
+                const canvas = document.createElement('canvas');
+                resultBlock.appendChild(canvas);
+                
+                const activeThemeButton = document.querySelector('.color-option.active');
+                const theme = activeThemeButton?.getAttribute('data-theme') || 'purple';
+                console.log('Theme:', theme);
+                const currentTheme = getThemeColor();
+                
+                // Extract labels and values from results
+                const labels = results.map(row => Object.values(row)[0].toString());
+                const values = results.map(row => Number(Object.values(row)[1]));
+
+                const chartConfig = {
+                    type: 'bar' as const,
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            label: query,
+                            data: values,
+                            backgroundColor: currentTheme.background,
+                            borderColor: currentTheme.primary,
+                            borderWidth: 2,
+                            borderRadius: 8,
+                            barThickness: 'flex',
+                            maxBarThickness: 50,
+                            barPercentage: 0.8
+                        }]
+                    },
+                    options: {
+                        color: theme === 'white' ? '#1a1a1a' : '#ffffff',
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                display: false,
+                                labels: {
+                                    color: theme === 'white' ? '#1a1a1a' : '#ffffff'
+                                }
+                            }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                border: {
+                                    color: theme === 'white' ? '#1a1a1a' : '#ffffff'
+                                },
+                                grid: {
+                                    color: theme === 'white' ? 'rgba(0, 0, 0, 0.1)' : 'rgba(255, 255, 255, 0.1)',
+                                },
+                                ticks: {
+                                    color: theme === 'white' ? '#1a1a1a' : '#ffffff',
+                                    font: {
+                                        family: "'Inter', sans-serif",
+                                        size: 12,
+                                        weight: '500'
+                                    }
+                                }
+                            },
+                            x: {
+                                border: {
+                                    color: theme === 'white' ? '#1a1a1a' : '#ffffff'
+                                },
+                                grid: {
+                                    display: false
+                                },
+                                ticks: {
+                                    color: theme === 'white' ? '#1a1a1a' : '#ffffff',
+                                    font: {
+                                        family: "'Inter', sans-serif",
+                                        size: 12,
+                                        weight: '500'
+                                    }
+                                }
+                            }
+                        }
+                    }
+                };
+
+                new ChartJS(canvas, chartConfig);
+            } else {
+                console.log('Creating table view...');
                 const table = this.createResultsTable(results);
                 resultBlock.appendChild(table);
-            } else {
-                const noResults = document.createElement('p');
-                noResults.textContent = 'No results found';
-                resultBlock.appendChild(noResults);
             }
-            
-            // Add to container
+
+            // Add the new result block and scroll to it
             resultsContainer.appendChild(resultBlock);
-            
-            // Scroll to bottom
             resultsContainer.scrollTop = resultsContainer.scrollHeight;
 
             // Clear the query input
@@ -318,6 +453,30 @@ class App {
                 if (theme) {
                     localStorage.setItem('theme', theme);
                 }
+
+                // Update all charts with new theme colors
+                const charts = document.querySelectorAll('canvas');
+                charts.forEach(canvas => {
+                    const chart = ChartJS.getChart(canvas);
+                    if (chart) {
+                        const themeColors = getThemeColor();
+                        chart.data.datasets[0].backgroundColor = themeColors.background;
+                        chart.data.datasets[0].borderColor = themeColors.primary;
+                        
+                        // Update text colors
+                        chart.options.color = theme === 'white' ? '#1a1a1a' : '#ffffff';
+                        if (chart.options.scales?.y) {
+                            chart.options.scales.y.ticks.color = theme === 'white' ? '#1a1a1a' : '#ffffff';
+                            chart.options.scales.y.border.color = theme === 'white' ? '#1a1a1a' : '#ffffff';
+                            chart.options.scales.y.grid.color = theme === 'white' ? 'rgba(0, 0, 0, 0.1)' : 'rgba(255, 255, 255, 0.1)';
+                        }
+                        if (chart.options.scales?.x) {
+                            chart.options.scales.x.ticks.color = theme === 'white' ? '#1a1a1a' : '#ffffff';
+                            chart.options.scales.x.border.color = theme === 'white' ? '#1a1a1a' : '#ffffff';
+                        }
+                        chart.update();
+                    }
+                });
             });
         });
     }
@@ -326,98 +485,22 @@ class App {
         const resultsContainer = document.querySelector('.results-container');
         if (!resultsContainer) return;
 
-        // Create a clone of the results for PDF generation
-        const clone = resultsContainer.cloneNode(true) as HTMLElement;
-        
-        // Apply PDF-specific styling with high contrast colors
-        const style = document.createElement('style');
-        style.textContent = `
-            table {
-                width: 100%;
-                border-collapse: collapse;
-                margin-top: 20px;
-                font-size: 12px;
-                color: #000000;
-            }
-            th, td {
-                padding: 12px;
-                text-align: left;
-                border: 1px solid #000000;
-                background-color: #FFFFFF;
-            }
-            th {
-                background-color: #1D1D1F;
-                color: #FFFFFF;
-                font-weight: 600;
-            }
-            .query-display {
-                font-size: 14px;
-                margin-bottom: 16px;
-                padding-bottom: 12px;
-                border-bottom: 2px solid #1D1D1F;
-                color: #1D1D1F;
-                font-weight: 600;
-            }
-            tr:nth-child(even) td {
-                background-color: #F5F5F7;
-            }
-        `;
-        clone.prepend(style);
+        // Wait for charts to render
+        await new Promise(resolve => setTimeout(resolve, 100));
 
-        // Configure PDF options with better quality settings
         const opt = {
-            margin: [15, 15],
-            filename: 'query-results.pdf',
-            image: { type: 'jpeg', quality: 1.0 },
+            margin: 1,
+            filename: 'results.pdf',
+            image: { type: 'jpeg', quality: 0.98 },
             html2canvas: { 
-                scale: 3, // Higher scale for better quality
+                scale: 2,
                 useCORS: true,
-                logging: false,
-                backgroundColor: '#FFFFFF'
+                logging: false
             },
-            jsPDF: { 
-                unit: 'mm', 
-                format: 'a4', 
-                orientation: 'portrait',
-                compress: false
-            }
+            jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' }
         };
 
-        try {
-            // Show loading state
-            const exportButton = document.getElementById('export-pdf') as HTMLButtonElement;
-            if (exportButton) {
-                exportButton.disabled = true;
-                exportButton.textContent = 'Exporting...';
-            }
-
-            // Generate PDF
-            await html2pdf().from(clone).set(opt).save();
-
-            // Reset button state
-            if (exportButton) {
-                exportButton.disabled = false;
-                exportButton.innerHTML = `
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z" fill="currentColor"/>
-                    </svg>
-                    Export PDF
-                `;
-            }
-        } catch (error) {
-            console.error('PDF export failed:', error);
-            const exportButton = document.getElementById('export-pdf') as HTMLButtonElement;
-            if (exportButton) {
-                exportButton.disabled = false;
-                exportButton.innerHTML = `
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z" fill="currentColor"/>
-                    </svg>
-                    Export PDF
-                `;
-            }
-            this.showToast('Failed to export PDF. Please try again.');
-        }
+        html2pdf().set(opt).from(resultsContainer).save();
     }
 }
 

@@ -1470,3 +1470,25 @@ body.theme-white .table-container::-webkit-scrollbar-thumb:hover {
 .app-title::after {
     display: none;
 }
+
+.result-block canvas {
+    width: 100% !important;
+    height: 400px !important;
+    max-height: 400px !important;
+}
+
+.result-block {
+    background: var(--surface-color);
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    height: auto;
+    max-height: 500px;
+}
+
+.question-display {
+    font-weight: 500;
+    margin-bottom: 16px;
+    color: var(--text-color);
+}
