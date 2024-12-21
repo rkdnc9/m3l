@@ -15,6 +15,29 @@
     --shadow-soft: 0 8px 32px rgba(0, 0, 0, 0.2);
     --shadow-sharp: 0 2px 4px rgba(0, 0, 0, 0.1), 0 8px 16px rgba(0, 0, 0, 0.1);
     --font-mono: Menlo, Monaco, "SF Mono", monospace;
+
+    /* White Theme (Light Mode) */
+    --white-bg-primary: #FFFFFF;
+    --white-bg-secondary: #F5F5F7;
+    --white-accent-primary: #000000;
+    --white-accent-secondary: #1D1D1F;
+    --white-accent-primary-rgb: 0, 0, 0;
+    --white-text-primary: #1D1D1F;
+    --white-text-secondary: #424245;
+    --white-text-tertiary: #6E6E73;
+    --white-border-color: #D2D2D7;
+    --white-gradient-primary: linear-gradient(135deg, #1D1D1F 0%, #424245 100%);
+    --white-gradient-secondary: linear-gradient(135deg, #424245 0%, #1D1D1F 100%);
+
+    /* Amber Theme - updated gradients */
+    --amber-bg-primary: #1C1C1E;
+    --amber-bg-secondary: #2C2C2E;
+    --amber-accent-primary: #FF9F0A;
+    --amber-accent-secondary: #FFB340;
+    --amber-accent-primary-rgb: 255, 159, 10;
+    --amber-gradient-primary: linear-gradient(135deg, #FF9F0A 0%, #FF8A00 50%, #FF6B00 100%);
+    --amber-gradient-secondary: linear-gradient(135deg, #FF6B00 0%, #FF8A00 50%, #FF9F0A 100%);
+    --amber-neon-glow: #FFC168;
 }
 
 * {
@@ -850,11 +873,17 @@ button:focus {
     --amber-neon-glow: #FFC168;
     
     /* White Theme */
-    --white-bg-primary: #000000;
-    --white-bg-secondary: #1C1C1E;
-    --white-accent-primary: #FFFFFF;
-    --white-accent-secondary: #A8A8A8;
-    --white-neon-glow: #FFFFFF;
+    --white-bg-primary: #FFFFFF;
+    --white-bg-secondary: #F5F5F7;
+    --white-accent-primary: #000000;
+    --white-accent-secondary: #1D1D1F;
+    --white-accent-primary-rgb: 0, 0, 0;
+    --white-text-primary: #1D1D1F;
+    --white-text-secondary: #424245;
+    --white-text-tertiary: #6E6E73;
+    --white-border-color: #D2D2D7;
+    --white-gradient-primary: linear-gradient(135deg, #1D1D1F 0%, #424245 100%);
+    --white-gradient-secondary: linear-gradient(135deg, #424245 0%, #1D1D1F 100%);
 }
 
 /* Theme Classes */
@@ -871,6 +900,9 @@ button:focus {
     --bg-secondary: var(--amber-bg-secondary);
     --accent-primary: var(--amber-accent-primary);
     --accent-secondary: var(--amber-accent-secondary);
+    --accent-primary-rgb: var(--amber-accent-primary-rgb);
+    --gradient-primary: var(--amber-gradient-primary);
+    --gradient-secondary: var(--amber-gradient-secondary);
     --neon-glow: var(--amber-neon-glow);
 }
 
@@ -879,7 +911,73 @@ button:focus {
     --bg-secondary: var(--white-bg-secondary);
     --accent-primary: var(--white-accent-primary);
     --accent-secondary: var(--white-accent-secondary);
-    --neon-glow: var(--white-neon-glow);
+    --accent-primary-rgb: var(--white-accent-primary-rgb);
+    --gradient-primary: var(--white-gradient-primary);
+    --gradient-secondary: var(--white-gradient-secondary);
+    --text-primary: var(--white-text-primary);
+    --text-secondary: var(--white-text-secondary);
+    --text-tertiary: var(--white-text-tertiary);
+    --border-color: var(--white-border-color);
+}
+
+/* Adjustments for light theme */
+.theme-white .file-section,
+.theme-white .api-key-section,
+.theme-white .query-section {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+}
+
+.theme-white input,
+.theme-white select,
+.theme-white textarea {
+    background: var(--bg-primary);
+    border: 1px solid var(--border-color);
+    color: var(--text-primary);
+}
+
+.theme-white .help-modal {
+    background: rgba(255, 255, 255, 0.8);
+}
+
+.theme-white .help-content {
+    background: var(--bg-primary);
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+}
+
+.theme-white .results-section th {
+    background: var(--bg-secondary);
+    border-bottom: 1px solid var(--border-color);
+}
+
+.theme-white .results-section td {
+    border-bottom: 1px solid var(--border-color);
+}
+
+.theme-white .toast {
+    background: rgba(0, 0, 0, 0.8);
+    color: white;
+}
+
+.theme-white .color-selector {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+}
+
+.theme-white #submit-query {
+    color: white;
+}
+
+.theme-white .help-icon,
+.theme-white .close-help {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+}
+
+.theme-white .help-icon:hover,
+.theme-white .close-help:hover {
+    background: var(--bg-primary);
+    border-color: var(--accent-primary);
 }
 
 /* API Provider Dropdown */
@@ -994,17 +1092,22 @@ select:hover {
     --amber-accent-primary: #FF9F0A;
     --amber-accent-secondary: #FFB340;
     --amber-accent-primary-rgb: 255, 159, 10;
-    --amber-gradient-primary: linear-gradient(135deg, #FF9F0A 0%, #FFB340 100%);
-    --amber-gradient-secondary: linear-gradient(135deg, #FFB340 0%, #FF9F0A 100%);
+    --amber-gradient-primary: linear-gradient(135deg, #FF9F0A 0%, #FF8A00 50%, #FF6B00 100%);
+    --amber-gradient-secondary: linear-gradient(135deg, #FF6B00 0%, #FF8A00 50%, #FF9F0A 100%);
+    --amber-neon-glow: #FFC168;
 
     /* White Theme */
-    --white-bg-primary: #000000;
-    --white-bg-secondary: #1C1C1E;
-    --white-accent-primary: #FFFFFF;
-    --white-accent-secondary: #A8A8A8;
-    --white-accent-primary-rgb: 255, 255, 255;
-    --white-gradient-primary: linear-gradient(135deg, #FFFFFF 0%, #A8A8A8 100%);
-    --white-gradient-secondary: linear-gradient(135deg, #A8A8A8 0%, #FFFFFF 100%);
+    --white-bg-primary: #FFFFFF;
+    --white-bg-secondary: #F5F5F7;
+    --white-accent-primary: #000000;
+    --white-accent-secondary: #1D1D1F;
+    --white-accent-primary-rgb: 0, 0, 0;
+    --white-text-primary: #1D1D1F;
+    --white-text-secondary: #424245;
+    --white-text-tertiary: #6E6E73;
+    --white-border-color: #D2D2D7;
+    --white-gradient-primary: linear-gradient(135deg, #1D1D1F 0%, #424245 100%);
+    --white-gradient-secondary: linear-gradient(135deg, #424245 0%, #1D1D1F 100%);
 }
 
 /* Theme Classes */
@@ -1026,6 +1129,7 @@ select:hover {
     --accent-primary-rgb: var(--amber-accent-primary-rgb);
     --gradient-primary: var(--amber-gradient-primary);
     --gradient-secondary: var(--amber-gradient-secondary);
+    --neon-glow: var(--amber-neon-glow);
 }
 
 .theme-white {
@@ -1036,4 +1140,35 @@ select:hover {
     --accent-primary-rgb: var(--white-accent-primary-rgb);
     --gradient-primary: var(--white-gradient-primary);
     --gradient-secondary: var(--white-gradient-secondary);
+    --text-primary: var(--white-text-primary);
+    --text-secondary: var(--white-text-secondary);
+    --text-tertiary: var(--white-text-tertiary);
+    --border-color: var(--white-border-color);
+}
+
+/* Results table styling for white theme */
+.theme-white .results-section table {
+    background: var(--bg-primary);
+    border: 1px solid var(--border-color);
+}
+
+.theme-white .results-section th {
+    background: var(--text-primary);
+    color: var(--bg-primary);
+    border-bottom: 1px solid var(--border-color);
+    font-weight: 500;
+}
+
+.theme-white .results-section td {
+    background: var(--bg-primary);
+    color: var(--text-primary);
+    border-bottom: 1px solid var(--border-color);
+}
+
+.theme-white .results-section tr:hover td {
+    background: var(--bg-secondary);
+}
+
+.theme-white .results-section tr:last-child td {
+    border-bottom: none;
 }
