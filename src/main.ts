@@ -13,6 +13,9 @@ import {
     Tooltip,
     Legend
 } from 'chart.js';
+import { ThemeService } from './services/ThemeService';
+import { ModalService } from './services/ModalService';
+import { ChartService } from './services/ChartService';
 
 // Register Chart.js components
 ChartJS.register(
@@ -26,33 +29,6 @@ ChartJS.register(
     Legend
 );
 
-// Add this function at the top level of your file, before any other functions
-function getThemeColor(): { primary: string; background: string } {
-    // Look for the active theme button instead of data-theme attribute
-    const activeThemeButton = document.querySelector('.color-option.active');
-    const theme = activeThemeButton?.getAttribute('data-theme') || 'purple';
-    console.log('Current theme:', theme);
-
-    const themeColors = {
-        'purple': {
-            primary: 'rgb(149, 76, 233)',
-            background: 'rgba(149, 76, 233, 0.2)'
-        },
-        'amber': {
-            primary: 'rgb(251, 191, 36)',
-            background: 'rgba(251, 191, 36, 0.2)'
-        },
-        'white': {
-            primary: 'rgb(107, 114, 128)',
-            background: 'rgba(107, 114, 128, 0.2)'
-        }
-    };
-    
-    const colors = themeColors[theme as keyof typeof themeColors] || themeColors.purple;
-    console.log('Using colors:', colors);
-    return colors;
-}
-
 class App {
     private duckdb: DuckDBHandler;
     private llm: LLMHandler | null = null;
@@ -61,8 +37,8 @@ class App {
     constructor() {
         this.duckdb = new DuckDBHandler();
         this.initializeApp();
-        this.showHelpModal();
         this.setupThemeSelector();
+        ModalService.setupModal('.help-modal', '.close-help');
     }
 
     private async initializeApp() {
@@ -114,35 +90,6 @@ class App {
             }
         });
 
-        // Help modal functionality
-        const helpIcon = document.querySelector('.help-icon') as HTMLButtonElement;
-        const helpModal = document.querySelector('.help-modal') as HTMLDivElement;
-        const closeHelp = document.querySelector('.close-help') as HTMLButtonElement;
-
-        // Show modal on help icon click
-        helpIcon?.addEventListener('click', () => {
-            helpModal?.removeAttribute('hidden');
-        });
-
-        // Close modal on close button click
-        closeHelp?.addEventListener('click', () => {
-            helpModal?.setAttribute('hidden', '');
-        });
-
-        // Close modal on backdrop click
-        helpModal?.addEventListener('click', (e) => {
-            if (e.target === helpModal) {
-                helpModal.setAttribute('hidden', '');
-            }
-        });
-
-        // Close modal on escape key
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape' && !helpModal?.hasAttribute('hidden')) {
-                helpModal?.setAttribute('hidden', '');
-            }
-        });
-
         // Handle file selection
         fileInput.addEventListener('change', async (event) => {
             const target = event.target as HTMLInputElement;
@@ -156,7 +103,6 @@ class App {
                     fileName.textContent = 'No file selected';
                     fileSection.classList.remove('has-file');
                     this.showToast(`Error loading file: ${error}`);
-                    console.error('File loading error:', error);
                 }
             } else {
                 fileName.textContent = 'No file selected';
@@ -205,151 +151,89 @@ class App {
     }
 
     private async handleQuery() {
-        if (!this.schema) {
-            this.showToast('Please load a file first');
-            return;
-        }
-
-        const queryInput = document.getElementById('nl-query') as HTMLTextAreaElement;
-        const query = queryInput.value;
-
-        if (!query) {
-            this.showToast('Please enter a query');
-            return;
-        }
-
-        if (!this.llm) {
-            this.showToast('Please enter an API key');
-            return;
-        }
+        if (!this.validateQueryPrerequisites()) return;
 
         try {
+            const queryInput = document.getElementById('nl-query') as HTMLTextAreaElement;
+            const query = queryInput.value;
             const shouldVisualize = detectVisualizationIntent(query);
-            console.log('Question:', query);
-            console.log('Should visualize:', shouldVisualize);
 
-            const sqlQuery = await this.llm.getNLToSQL(this.schema, query);
-            console.log('SQL Query:', sqlQuery);
-
+            const sqlQuery = await this.llm!.getNLToSQL(this.schema, query);
             const results = await this.duckdb.executeQuery(sqlQuery);
-            console.log('Query Results:', results);
-
-            const resultsContainer = document.querySelector('.results-container');
-            if (!resultsContainer) {
-                console.error('Results container not found');
-                return;
-            }
-
-            // Create a new result block
-            const resultBlock = document.createElement('div');
-            resultBlock.className = 'result-block';
-
-            // Add question display
-            const questionDisplay = document.createElement('div');
-            questionDisplay.className = 'question-display';
-            questionDisplay.textContent = query;
-            resultBlock.appendChild(questionDisplay);
-
-            if (shouldVisualize) {
-                console.log('Attempting to create visualization...');
-                
-                // Create canvas for chart
-                const canvas = document.createElement('canvas');
-                resultBlock.appendChild(canvas);
-                
-                const activeThemeButton = document.querySelector('.color-option.active');
-                const theme = activeThemeButton?.getAttribute('data-theme') || 'purple';
-                console.log('Theme:', theme);
-                const currentTheme = getThemeColor();
-                
-                // Extract labels and values from results
-                const labels = results.map(row => Object.values(row)[0].toString());
-                const values = results.map(row => Number(Object.values(row)[1]));
-
-                const chartConfig = {
-                    type: 'bar' as const,
-                    data: {
-                        labels: labels,
-                        datasets: [{
-                            label: query,
-                            data: values,
-                            backgroundColor: currentTheme.background,
-                            borderColor: currentTheme.primary,
-                            borderWidth: 2,
-                            borderRadius: 8,
-                            barThickness: 'flex',
-                            maxBarThickness: 50,
-                            barPercentage: 0.8
-                        }]
-                    },
-                    options: {
-                        color: theme === 'white' ? '#1a1a1a' : '#ffffff',
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        plugins: {
-                            legend: {
-                                display: false,
-                                labels: {
-                                    color: theme === 'white' ? '#1a1a1a' : '#ffffff'
-                                }
-                            }
-                        },
-                        scales: {
-                            y: {
-                                beginAtZero: true,
-                                border: {
-                                    color: theme === 'white' ? '#1a1a1a' : '#ffffff'
-                                },
-                                grid: {
-                                    color: theme === 'white' ? 'rgba(0, 0, 0, 0.1)' : 'rgba(255, 255, 255, 0.1)',
-                                },
-                                ticks: {
-                                    color: theme === 'white' ? '#1a1a1a' : '#ffffff',
-                                    font: {
-                                        family: "'Inter', sans-serif",
-                                        size: 12,
-                                        weight: '500'
-                                    }
-                                }
-                            },
-                            x: {
-                                border: {
-                                    color: theme === 'white' ? '#1a1a1a' : '#ffffff'
-                                },
-                                grid: {
-                                    display: false
-                                },
-                                ticks: {
-                                    color: theme === 'white' ? '#1a1a1a' : '#ffffff',
-                                    font: {
-                                        family: "'Inter', sans-serif",
-                                        size: 12,
-                                        weight: '500'
-                                    }
-                                }
-                            }
-                        }
-                    }
-                };
-
-                new ChartJS(canvas, chartConfig);
-            } else {
-                console.log('Creating table view...');
-                const table = this.createResultsTable(results);
-                resultBlock.appendChild(table);
-            }
-
-            // Add the new result block and scroll to it
-            resultsContainer.appendChild(resultBlock);
-            resultsContainer.scrollTop = resultsContainer.scrollHeight;
-
-            // Clear the query input
+            
+            this.displayResults(results, query, shouldVisualize);
             queryInput.value = '';
             
         } catch (error) {
             this.showToast(`Error executing query: ${error}`);
-            console.error('Query execution error:', error);
         }
+    }
+
+    private validateQueryPrerequisites(): boolean {
+        if (!this.schema) {
+            this.showToast('Please load a file first');
+            return false;
+        }
+
+        const queryInput = document.getElementById('nl-query') as HTMLTextAreaElement;
+        if (!queryInput.value) {
+            this.showToast('Please enter a query');
+            return false;
+        }
+
+        if (!this.llm) {
+            this.showToast('Please enter an API key');
+            return false;
+        }
+
+        return true;
+    }
+
+    private displayResults(results: any[], query: string, shouldVisualize: boolean) {
+        const resultsContainer = document.querySelector('.results-container');
+        if (!resultsContainer) {
+            console.error('Results container not found');
+            return;
+        }
+
+        // Create a new result block
+        const resultBlock = document.createElement('div');
+        resultBlock.className = 'result-block';
+
+        // Add question display
+        const questionDisplay = document.createElement('div');
+        questionDisplay.className = 'question-display';
+        questionDisplay.textContent = query;
+        resultBlock.appendChild(questionDisplay);
+
+        if (shouldVisualize) {
+            console.log('Attempting to create visualization...');
+            
+            // Create canvas for chart
+            const canvas = document.createElement('canvas');
+            resultBlock.appendChild(canvas);
+            
+            const activeThemeButton = document.querySelector('.color-option.active');
+            const theme = activeThemeButton?.getAttribute('data-theme') || 'purple';
+            console.log('Theme:', theme);
+            const currentTheme = ThemeService.getThemeColors();
+            
+            // Extract labels and values from results
+            const labels = results.map(row => Object.values(row)[0].toString());
+            const values = results.map(row => Number(Object.values(row)[1]));
+
+            const chartConfig = ChartService.createChartConfig(labels, values, query);
+
+            new ChartJS(canvas, chartConfig);
+        } else {
+            console.log('Creating table view...');
+            const table = this.createResultsTable(results);
+            resultBlock.appendChild(table);
+        }
+
+        // Add the new result block and scroll to it
+        resultsContainer.appendChild(resultBlock);
+        resultsContainer.scrollTop = resultsContainer.scrollHeight;
     }
 
     private createResultsTable(results: any[]): HTMLTableElement {
@@ -397,35 +281,6 @@ class App {
         }, 3000);
     }
 
-    private showHelpModal() {
-        const helpModal = document.querySelector('.help-modal') as HTMLElement;
-        if (helpModal) {
-            helpModal.removeAttribute('hidden');
-        }
-
-        // Add event listener for closing modal if not already added
-        const closeHelp = document.querySelector('.close-help') as HTMLElement;
-        if (closeHelp) {
-            closeHelp.addEventListener('click', () => {
-                helpModal.setAttribute('hidden', '');
-            });
-        }
-
-        // Close on backdrop click
-        helpModal?.addEventListener('click', (e) => {
-            if (e.target === helpModal) {
-                helpModal.setAttribute('hidden', '');
-            }
-        });
-
-        // Close on Escape key
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape' && !helpModal?.hasAttribute('hidden')) {
-                helpModal?.setAttribute('hidden', '');
-            }
-        });
-    }
-
     private setupThemeSelector() {
         const colorOptions = document.querySelectorAll('.color-option');
         const body = document.body;
@@ -459,22 +314,7 @@ class App {
                 charts.forEach(canvas => {
                     const chart = ChartJS.getChart(canvas);
                     if (chart) {
-                        const themeColors = getThemeColor();
-                        chart.data.datasets[0].backgroundColor = themeColors.background;
-                        chart.data.datasets[0].borderColor = themeColors.primary;
-                        
-                        // Update text colors
-                        chart.options.color = theme === 'white' ? '#1a1a1a' : '#ffffff';
-                        if (chart.options.scales?.y) {
-                            chart.options.scales.y.ticks.color = theme === 'white' ? '#1a1a1a' : '#ffffff';
-                            chart.options.scales.y.border.color = theme === 'white' ? '#1a1a1a' : '#ffffff';
-                            chart.options.scales.y.grid.color = theme === 'white' ? 'rgba(0, 0, 0, 0.1)' : 'rgba(255, 255, 255, 0.1)';
-                        }
-                        if (chart.options.scales?.x) {
-                            chart.options.scales.x.ticks.color = theme === 'white' ? '#1a1a1a' : '#ffffff';
-                            chart.options.scales.x.border.color = theme === 'white' ? '#1a1a1a' : '#ffffff';
-                        }
-                        chart.update();
+                        ThemeService.updateChartTheme(chart, theme);
                     }
                 });
             });
