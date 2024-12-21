@@ -326,7 +326,7 @@ class App {
         // Create a clone of the results for PDF generation
         const clone = resultsContainer.cloneNode(true) as HTMLElement;
         
-        // Apply PDF-specific styling
+        // Apply PDF-specific styling with high contrast colors
         const style = document.createElement('style');
         style.textContent = `
             table {
@@ -334,38 +334,49 @@ class App {
                 border-collapse: collapse;
                 margin-top: 20px;
                 font-size: 12px;
+                color: #000000;
             }
             th, td {
-                padding: 8px;
+                padding: 12px;
                 text-align: left;
-                border: 1px solid #ddd;
+                border: 1px solid #000000;
+                background-color: #FFFFFF;
             }
             th {
-                background-color: #f5f5f5;
+                background-color: #1D1D1F;
+                color: #FFFFFF;
+                font-weight: 600;
             }
             .query-display {
                 font-size: 14px;
                 margin-bottom: 16px;
                 padding-bottom: 12px;
-                border-bottom: 1px solid #ddd;
+                border-bottom: 2px solid #1D1D1F;
+                color: #1D1D1F;
+                font-weight: 600;
+            }
+            tr:nth-child(even) td {
+                background-color: #F5F5F7;
             }
         `;
         clone.prepend(style);
 
-        // Configure PDF options
+        // Configure PDF options with better quality settings
         const opt = {
-            margin: [10, 10],
+            margin: [15, 15],
             filename: 'query-results.pdf',
-            image: { type: 'jpeg', quality: 0.98 },
+            image: { type: 'jpeg', quality: 1.0 },
             html2canvas: { 
-                scale: 2,
+                scale: 3, // Higher scale for better quality
                 useCORS: true,
-                logging: false
+                logging: false,
+                backgroundColor: '#FFFFFF'
             },
             jsPDF: { 
                 unit: 'mm', 
                 format: 'a4', 
-                orientation: 'portrait' 
+                orientation: 'portrait',
+                compress: false
             }
         };
 
