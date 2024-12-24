@@ -1,6 +1,34 @@
 import { DuckDBHandler } from './duckdb';
 import { LLMHandler } from './llm';
-import html2pdf from 'html2pdf.js';
+import { detectVisualizationIntent } from './utils/visualizationUtils';
+import { Chart as ChartJS, ChartConfiguration } from 'chart.js/auto';
+import {
+    CategoryScale,
+    LinearScale,
+    BarElement,
+    LineElement,
+    PointElement,
+    Title,
+    Tooltip,
+    Legend
+} from 'chart.js';
+import { ThemeService } from './services/ThemeService';
+import { ModalService } from './services/ModalService';
+import { ChartService } from './services/ChartService';
+import { jsPDF } from 'jspdf';
+import autoTable from 'jspdf-autotable';
+
+// Register Chart.js components
+ChartJS.register(
+    CategoryScale,
+    LinearScale,
+    BarElement,
+    LineElement,
+    PointElement,
+    Title,
+    Tooltip,
+    Legend
+);
 
 class App {
     private duckdb: DuckDBHandler;
@@ -10,8 +38,8 @@ class App {
     constructor() {
         this.duckdb = new DuckDBHandler();
         this.initializeApp();
-        this.showHelpModal();
         this.setupThemeSelector();
+        ModalService.setupModal('.help-modal', '.close-help');
     }
 
     private async initializeApp() {
@@ -63,35 +91,6 @@ class App {
             }
         });
 
-        // Help modal functionality
-        const helpIcon = document.querySelector('.help-icon') as HTMLButtonElement;
-        const helpModal = document.querySelector('.help-modal') as HTMLDivElement;
-        const closeHelp = document.querySelector('.close-help') as HTMLButtonElement;
-
-        // Show modal on help icon click
-        helpIcon?.addEventListener('click', () => {
-            helpModal?.removeAttribute('hidden');
-        });
-
-        // Close modal on close button click
-        closeHelp?.addEventListener('click', () => {
-            helpModal?.setAttribute('hidden', '');
-        });
-
-        // Close modal on backdrop click
-        helpModal?.addEventListener('click', (e) => {
-            if (e.target === helpModal) {
-                helpModal.setAttribute('hidden', '');
-            }
-        });
-
-        // Close modal on escape key
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape' && !helpModal?.hasAttribute('hidden')) {
-                helpModal?.setAttribute('hidden', '');
-            }
-        });
-
         // Handle file selection
         fileInput.addEventListener('change', async (event) => {
             const target = event.target as HTMLInputElement;
@@ -105,7 +104,6 @@ class App {
                     fileName.textContent = 'No file selected';
                     fileSection.classList.remove('has-file');
                     this.showToast(`Error loading file: ${error}`);
-                    console.error('File loading error:', error);
                 }
             } else {
                 fileName.textContent = 'No file selected';
@@ -154,67 +152,88 @@ class App {
     }
 
     private async handleQuery() {
-        if (!this.schema) {
-            this.showToast('Please load a file first');
-            return;
-        }
-
-        const queryInput = document.getElementById('nl-query') as HTMLTextAreaElement;
-        const query = queryInput.value;
-
-        if (!query) {
-            this.showToast('Please enter a query');
-            return;
-        }
-
-        if (!this.llm) {
-            this.showToast('Please enter an API key');
-            return;
-        }
+        if (!this.validateQueryPrerequisites()) return;
 
         try {
-            const sqlQuery = await this.llm.getNLToSQL(this.schema, query);
+            const queryInput = document.getElementById('nl-query') as HTMLTextAreaElement;
+            const query = queryInput.value;
+            const shouldVisualize = detectVisualizationIntent(query);
+
+            const sqlQuery = await this.llm!.getNLToSQL(this.schema, query);
             const results = await this.duckdb.executeQuery(sqlQuery);
             
-            // Create and add the result block
-            const resultsContainer = document.querySelector('.results-container');
-            if (!resultsContainer) {
-                console.error('Results container not found');
-                return;
-            }
-
-            const resultBlock = document.createElement('div');
-            resultBlock.className = 'result-block';
-            
-            // Add the query
-            const queryDisplay = document.createElement('div');
-            queryDisplay.className = 'query-display';
-            queryDisplay.textContent = `Q: ${query}`;
-            resultBlock.appendChild(queryDisplay);
-            
-            // Add the results table
-            if (results.length > 0) {
-                const table = this.createResultsTable(results);
-                resultBlock.appendChild(table);
-            } else {
-                const noResults = document.createElement('p');
-                noResults.textContent = 'No results found';
-                resultBlock.appendChild(noResults);
-            }
-            
-            // Add to container
-            resultsContainer.appendChild(resultBlock);
-            
-            // Scroll to bottom
-            resultsContainer.scrollTop = resultsContainer.scrollHeight;
-
-            // Clear the query input
+            this.displayResults(results, query, shouldVisualize);
             queryInput.value = '';
             
         } catch (error) {
             this.showToast(`Error executing query: ${error}`);
-            console.error('Query execution error:', error);
         }
+    }
+
+    private validateQueryPrerequisites(): boolean {
+        if (!this.schema) {
+            this.showToast('Please load a file first');
+            return false;
+        }
+
+        const queryInput = document.getElementById('nl-query') as HTMLTextAreaElement;
+        if (!queryInput.value) {
+            this.showToast('Please enter a query');
+            return false;
+        }
+
+        if (!this.llm) {
+            this.showToast('Please enter an API key');
+            return false;
+        }
+
+        return true;
+    }
+
+    private displayResults(results: Record<string, any>[], query: string, shouldVisualize: boolean) {
+        const resultsContainer = document.querySelector('.results-container');
+        if (!resultsContainer) {
+            console.error('Results container not found');
+            return;
+        }
+
+        // Create a new result block
+        const resultBlock = document.createElement('div');
+        resultBlock.className = 'result-block';
+
+        // Add question display
+        const questionDisplay = document.createElement('div');
+        questionDisplay.className = 'question-display';
+        questionDisplay.textContent = query;
+        resultBlock.appendChild(questionDisplay);
+
+        if (shouldVisualize) {
+            console.log('Attempting to create visualization...');
+            
+            // Create canvas for chart
+            const canvas = document.createElement('canvas');
+            resultBlock.appendChild(canvas);
+            
+            const activeThemeButton = document.querySelector('.color-option.active');
+            const theme = activeThemeButton?.getAttribute('data-theme') || 'purple';
+            console.log('Theme:', theme);
+            
+            // Fix the Object.values type issue
+            const labels = results.map(row => String(Object.values(row)[0]));
+            const values = results.map(row => Number(Object.values(row)[1]));
+
+            const chartConfig = ChartService.createChartConfig(labels, values, query);
+
+            new ChartJS(canvas, chartConfig);
+        } else {
+            console.log('Creating table view...');
+            const table = this.createResultsTable(results);
+            resultBlock.appendChild(table);
+        }
+
+        // Add the new result block and scroll to it
+        resultsContainer.appendChild(resultBlock);
+        resultsContainer.scrollTop = resultsContainer.scrollHeight;
     }
 
     private createResultsTable(results: any[]): HTMLTableElement {
@@ -262,35 +281,6 @@ class App {
         }, 3000);
     }
 
-    private showHelpModal() {
-        const helpModal = document.querySelector('.help-modal') as HTMLElement;
-        if (helpModal) {
-            helpModal.removeAttribute('hidden');
-        }
-
-        // Add event listener for closing modal if not already added
-        const closeHelp = document.querySelector('.close-help') as HTMLElement;
-        if (closeHelp) {
-            closeHelp.addEventListener('click', () => {
-                helpModal.setAttribute('hidden', '');
-            });
-        }
-
-        // Close on backdrop click
-        helpModal?.addEventListener('click', (e) => {
-            if (e.target === helpModal) {
-                helpModal.setAttribute('hidden', '');
-            }
-        });
-
-        // Close on Escape key
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape' && !helpModal?.hasAttribute('hidden')) {
-                helpModal?.setAttribute('hidden', '');
-            }
-        });
-    }
-
     private setupThemeSelector() {
         const colorOptions = document.querySelectorAll('.color-option');
         const body = document.body;
@@ -318,106 +308,152 @@ class App {
                 if (theme) {
                     localStorage.setItem('theme', theme);
                 }
+
+                // Update all charts with new theme colors
+                const charts = document.querySelectorAll('canvas');
+                charts.forEach(canvas => {
+                    const chart = ChartJS.getChart(canvas);
+                    if (chart && theme) {
+                        ThemeService.updateChartTheme(chart, theme);
+                    }
+                });
             });
         });
     }
 
     private async exportToPDF() {
-        const resultsContainer = document.querySelector('.results-container');
-        if (!resultsContainer) return;
+        const resultBlocks = document.querySelectorAll('.result-block');
+        if (!resultBlocks.length) return;
 
-        // Create a clone of the results for PDF generation
-        const clone = resultsContainer.cloneNode(true) as HTMLElement;
+        // Add type augmentation for jsPDF
+        const doc = new jsPDF({
+            unit: 'px',
+            format: 'letter',
+            orientation: 'portrait'
+        }) as jsPDF & { autoTable: typeof autoTable };
+
+        const pageWidth = doc.internal.pageSize.getWidth();
+        const pageHeight = doc.internal.pageSize.getHeight();
+        const margin = 40;
+        const contentWidth = pageWidth - (margin * 2);
         
-        // Apply PDF-specific styling with high contrast colors
-        const style = document.createElement('style');
-        style.textContent = `
-            table {
-                width: 100%;
-                border-collapse: collapse;
-                margin-top: 20px;
-                font-size: 12px;
-                color: #000000;
-            }
-            th, td {
-                padding: 12px;
-                text-align: left;
-                border: 1px solid #000000;
-                background-color: #FFFFFF;
-            }
-            th {
-                background-color: #1D1D1F;
-                color: #FFFFFF;
-                font-weight: 600;
-            }
-            .query-display {
-                font-size: 14px;
-                margin-bottom: 16px;
-                padding-bottom: 12px;
-                border-bottom: 2px solid #1D1D1F;
-                color: #1D1D1F;
-                font-weight: 600;
-            }
-            tr:nth-child(even) td {
-                background-color: #F5F5F7;
-            }
-        `;
-        clone.prepend(style);
+        let yOffset = margin;
 
-        // Configure PDF options with better quality settings
-        const opt = {
-            margin: [15, 15],
-            filename: 'query-results.pdf',
-            image: { type: 'jpeg', quality: 1.0 },
-            html2canvas: { 
-                scale: 3, // Higher scale for better quality
-                useCORS: true,
-                logging: false,
-                backgroundColor: '#FFFFFF'
-            },
-            jsPDF: { 
-                unit: 'mm', 
-                format: 'a4', 
-                orientation: 'portrait',
-                compress: false
-            }
-        };
-
-        try {
-            // Show loading state
-            const exportButton = document.getElementById('export-pdf') as HTMLButtonElement;
-            if (exportButton) {
-                exportButton.disabled = true;
-                exportButton.textContent = 'Exporting...';
+        for (let i = 0; i < resultBlocks.length; i++) {
+            const block = resultBlocks[i] as HTMLElement;
+            
+            // Add question text
+            const questionEl = block.querySelector('.question-display');
+            if (questionEl) {
+                const questionText = questionEl.textContent || '';
+                doc.setFontSize(12);
+                doc.text(questionText, margin, yOffset);
+                yOffset += 20;
             }
 
-            // Generate PDF
-            await html2pdf().from(clone).set(opt).save();
+            // Handle table
+            const table = block.querySelector('table');
+            if (table) {
+                const tableData = this.extractTableData(table);
+                autoTable(doc, {
+                    head: [tableData.headers],
+                    body: tableData.rows,
+                    startY: yOffset,
+                    margin: { left: margin, right: margin },
+                    styles: { fontSize: 10 },
+                    headStyles: { fillColor: [200, 200, 200] }
+                });
+                yOffset = (doc as any).lastAutoTable.finalY + 20;
+            }
 
-            // Reset button state
-            if (exportButton) {
-                exportButton.disabled = false;
-                exportButton.innerHTML = `
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z" fill="currentColor"/>
-                    </svg>
-                    Export PDF
-                `;
+            // Handle chart
+            const canvas = block.querySelector('canvas');
+            if (canvas) {
+                const chart = ChartJS.getChart(canvas);
+                if (chart) {
+                    try {
+                        const tempCanvas = document.createElement('canvas');
+                        document.body.appendChild(tempCanvas);
+                        tempCanvas.style.position = 'absolute';
+                        tempCanvas.style.left = '-9999px';
+                        
+                        tempCanvas.width = contentWidth * 2;
+                        tempCanvas.height = (contentWidth * 2) * (9/16);
+                        
+                        // Create configuration with proper typing
+                        const tempConfig: ChartConfiguration = {
+                            type: (chart.config as any).type,  // Type assertion for now
+                            data: JSON.parse(JSON.stringify(chart.data)),
+                            options: {
+                                ...JSON.parse(JSON.stringify(chart.config.options)),
+                                responsive: false,
+                                animation: false,
+                                color: '#000000',
+                                scales: {
+                                    x: {
+                                        ticks: { color: '#000000' },
+                                        grid: { color: '#E5E5E5' },
+                                        border: { color: '#000000' }
+                                    },
+                                    y: {
+                                        ticks: { color: '#000000' },
+                                        grid: { color: '#E5E5E5' },
+                                        border: { color: '#000000' }
+                                    }
+                                },
+                                plugins: {
+                                    legend: {
+                                        labels: { color: '#000000' }
+                                    }
+                                }
+                            }
+                        };
+                        
+                        const tempChart = new ChartJS(tempCanvas, tempConfig);
+                        await tempChart.render();
+                        
+                        const imgData = tempCanvas.toDataURL('image/png', 1.0);
+                        doc.addImage(imgData, 'PNG', margin, yOffset, contentWidth, contentWidth * (9/16));
+                        
+                        tempChart.destroy();
+                        document.body.removeChild(tempCanvas);
+                        yOffset += (contentWidth * (9/16)) + 20;
+                    } catch (error) {
+                        console.error('Error exporting chart:', error);
+                    }
+                }
             }
-        } catch (error) {
-            console.error('PDF export failed:', error);
-            const exportButton = document.getElementById('export-pdf') as HTMLButtonElement;
-            if (exportButton) {
-                exportButton.disabled = false;
-                exportButton.innerHTML = `
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z" fill="currentColor"/>
-                    </svg>
-                    Export PDF
-                `;
+
+            // Add new page if needed
+            if (i < resultBlocks.length - 1 && yOffset > pageHeight - margin) {
+                doc.addPage();
+                yOffset = margin;
             }
-            this.showToast('Failed to export PDF. Please try again.');
         }
+
+        doc.save('results.pdf');
+    }
+
+    private extractTableData(table: HTMLTableElement) {
+        const headers: string[] = [];
+        const rows: string[][] = [];
+
+        // Extract headers
+        const headerCells = table.querySelectorAll('th');
+        headerCells.forEach(cell => headers.push(cell.textContent || ''));
+
+        // Extract rows
+        const rowElements = table.querySelectorAll('tr');
+        rowElements.forEach(row => {
+            if (row.querySelector('th')) return; // Skip header row
+            const rowData: string[] = [];
+            row.querySelectorAll('td').forEach(cell => {
+                rowData.push(cell.textContent || '');
+            });
+            if (rowData.length) rows.push(rowData);
+        });
+
+        return { headers, rows };
     }
 }
 

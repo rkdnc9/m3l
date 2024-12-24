@@ -15,8 +15,11 @@
     "@anthropic-ai/sdk": "^0.32.1",
     "@duckdb/duckdb-wasm": "^1.29.0",
     "@types/node": "^22.10.2",
-    "html2pdf.js": "^0.10.2",
+    "chart.js": "^4.4.7",
+    "jspdf": "^2.5.2",
+    "jspdf-autotable": "^3.8.4",
     "openai": "^4.76.3",
+    "react-chartjs-2": "^5.2.0",
     "typescript": "^5.7.2",
     "vite": "^6.0.3"
   }
