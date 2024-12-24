@@ -210,4 +210,47 @@ body[data-theme='white'] {
     width: 95%;
     padding: 1.5rem;
   }
-} 
+}
+
+/* Add these styles to fix PDF export rendering */
+@media print {
+    .result-block {
+        break-inside: avoid;
+        page-break-inside: avoid;
+        background: white !important;
+        margin: 20px 0;
+    }
+
+    .result-block canvas {
+        max-width: 100% !important;
+        height: auto !important;
+    }
+
+    table {
+        width: 100% !important;
+        border-collapse: collapse !important;
+        page-break-inside: avoid;
+    }
+
+    th, td {
+        border: 1px solid #ddd !important;
+        padding: 8px !important;
+        text-align: left !important;
+    }
+
+    th {
+        background-color: #f8f8f8 !important;
+    }
+}
+
+/* Update existing result-block styles */
+.result-block {
+    page-break-inside: avoid;
+    break-inside: avoid;
+}
+
+.result-block canvas {
+    max-width: 100%;
+    height: auto !important;
+    aspect-ratio: 16/9;
+}

@@ -1,24 +1,16 @@
-export type ChartType = 'line' | 'bar' | 'pie' | 'scatter';
+export type ChartType = 'bar' | 'line' | 'pie' | 'scatter';
 
 export interface DataPoint {
-  [key: string]: string | number | Date;
-}
-
-export interface ChartDataset {
-  label: string;
-  data: number[];
-  backgroundColor?: string | string[];
-  borderColor?: string | string[];
-  tension?: number;
+    [key: string]: number | string | Date;
 }
 
 export interface ChartData {
-  labels: string[];
-  datasets: ChartDataset[];
+    labels: string[];
+    datasets: {
+        label: string;
+        data: number[];
+        backgroundColor?: string | string[];
+        borderColor?: string | string[];
+        tension?: number;
+    }[];
 }
-
-export interface VisualizationProps {
-  data: DataPoint[];
-  query: string;
-  className?: string;
-} 

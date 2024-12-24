@@ -1,4 +1,4 @@
-import { Chart, ChartConfiguration } from 'chart.js';
+import { ChartConfiguration } from 'chart.js';
 import { ThemeService } from './ThemeService';
 
 export class ChartService {
@@ -45,7 +45,7 @@ export class ChartService {
                             font: {
                                 family: "'Inter', sans-serif",
                                 size: 12,
-                                weight: '500'
+                                weight: 500
                             }
                         }
                     },
@@ -57,7 +57,7 @@ export class ChartService {
                             font: {
                                 family: "'Inter', sans-serif",
                                 size: 12,
-                                weight: '500'
+                                weight: 500
                             }
                         }
                     }
@@ -65,4 +65,4 @@ export class ChartService {
             }
         };
     }
-} 
+}

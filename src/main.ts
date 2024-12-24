@@ -1,8 +1,7 @@
 import { DuckDBHandler } from './duckdb';
 import { LLMHandler } from './llm';
-import html2pdf from 'html2pdf.js';
 import { detectVisualizationIntent } from './utils/visualizationUtils';
-import { Chart as ChartJS } from 'chart.js/auto';
+import { Chart as ChartJS, ChartConfiguration } from 'chart.js/auto';
 import {
     CategoryScale,
     LinearScale,
@@ -16,6 +15,8 @@ import {
 import { ThemeService } from './services/ThemeService';
 import { ModalService } from './services/ModalService';
 import { ChartService } from './services/ChartService';
+import { jsPDF } from 'jspdf';
+import autoTable from 'jspdf-autotable';
 
 // Register Chart.js components
 ChartJS.register(
@@ -189,7 +190,7 @@ class App {
         return true;
     }
 
-    private displayResults(results: any[], query: string, shouldVisualize: boolean) {
+    private displayResults(results: Record<string, any>[], query: string, shouldVisualize: boolean) {
         const resultsContainer = document.querySelector('.results-container');
         if (!resultsContainer) {
             console.error('Results container not found');
@@ -216,10 +217,9 @@ class App {
             const activeThemeButton = document.querySelector('.color-option.active');
             const theme = activeThemeButton?.getAttribute('data-theme') || 'purple';
             console.log('Theme:', theme);
-            const currentTheme = ThemeService.getThemeColors();
             
-            // Extract labels and values from results
-            const labels = results.map(row => Object.values(row)[0].toString());
+            // Fix the Object.values type issue
+            const labels = results.map(row => String(Object.values(row)[0]));
             const values = results.map(row => Number(Object.values(row)[1]));
 
             const chartConfig = ChartService.createChartConfig(labels, values, query);
@@ -313,7 +313,7 @@ class App {
                 const charts = document.querySelectorAll('canvas');
                 charts.forEach(canvas => {
                     const chart = ChartJS.getChart(canvas);
-                    if (chart) {
+                    if (chart && theme) {
                         ThemeService.updateChartTheme(chart, theme);
                     }
                 });
@@ -322,25 +322,138 @@ class App {
     }
 
     private async exportToPDF() {
-        const resultsContainer = document.querySelector('.results-container');
-        if (!resultsContainer) return;
+        const resultBlocks = document.querySelectorAll('.result-block');
+        if (!resultBlocks.length) return;
 
-        // Wait for charts to render
-        await new Promise(resolve => setTimeout(resolve, 100));
+        // Add type augmentation for jsPDF
+        const doc = new jsPDF({
+            unit: 'px',
+            format: 'letter',
+            orientation: 'portrait'
+        }) as jsPDF & { autoTable: typeof autoTable };
 
-        const opt = {
-            margin: 1,
-            filename: 'results.pdf',
-            image: { type: 'jpeg', quality: 0.98 },
-            html2canvas: { 
-                scale: 2,
-                useCORS: true,
-                logging: false
-            },
-            jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' }
-        };
+        const pageWidth = doc.internal.pageSize.getWidth();
+        const pageHeight = doc.internal.pageSize.getHeight();
+        const margin = 40;
+        const contentWidth = pageWidth - (margin * 2);
+        
+        let yOffset = margin;
 
-        html2pdf().set(opt).from(resultsContainer).save();
+        for (let i = 0; i < resultBlocks.length; i++) {
+            const block = resultBlocks[i] as HTMLElement;
+            
+            // Add question text
+            const questionEl = block.querySelector('.question-display');
+            if (questionEl) {
+                const questionText = questionEl.textContent || '';
+                doc.setFontSize(12);
+                doc.text(questionText, margin, yOffset);
+                yOffset += 20;
+            }
+
+            // Handle table
+            const table = block.querySelector('table');
+            if (table) {
+                const tableData = this.extractTableData(table);
+                autoTable(doc, {
+                    head: [tableData.headers],
+                    body: tableData.rows,
+                    startY: yOffset,
+                    margin: { left: margin, right: margin },
+                    styles: { fontSize: 10 },
+                    headStyles: { fillColor: [200, 200, 200] }
+                });
+                yOffset = (doc as any).lastAutoTable.finalY + 20;
+            }
+
+            // Handle chart
+            const canvas = block.querySelector('canvas');
+            if (canvas) {
+                const chart = ChartJS.getChart(canvas);
+                if (chart) {
+                    try {
+                        const tempCanvas = document.createElement('canvas');
+                        document.body.appendChild(tempCanvas);
+                        tempCanvas.style.position = 'absolute';
+                        tempCanvas.style.left = '-9999px';
+                        
+                        tempCanvas.width = contentWidth * 2;
+                        tempCanvas.height = (contentWidth * 2) * (9/16);
+                        
+                        // Create configuration with proper typing
+                        const tempConfig: ChartConfiguration = {
+                            type: (chart.config as any).type,  // Type assertion for now
+                            data: JSON.parse(JSON.stringify(chart.data)),
+                            options: {
+                                ...JSON.parse(JSON.stringify(chart.config.options)),
+                                responsive: false,
+                                animation: false,
+                                color: '#000000',
+                                scales: {
+                                    x: {
+                                        ticks: { color: '#000000' },
+                                        grid: { color: '#E5E5E5' },
+                                        border: { color: '#000000' }
+                                    },
+                                    y: {
+                                        ticks: { color: '#000000' },
+                                        grid: { color: '#E5E5E5' },
+                                        border: { color: '#000000' }
+                                    }
+                                },
+                                plugins: {
+                                    legend: {
+                                        labels: { color: '#000000' }
+                                    }
+                                }
+                            }
+                        };
+                        
+                        const tempChart = new ChartJS(tempCanvas, tempConfig);
+                        await tempChart.render();
+                        
+                        const imgData = tempCanvas.toDataURL('image/png', 1.0);
+                        doc.addImage(imgData, 'PNG', margin, yOffset, contentWidth, contentWidth * (9/16));
+                        
+                        tempChart.destroy();
+                        document.body.removeChild(tempCanvas);
+                        yOffset += (contentWidth * (9/16)) + 20;
+                    } catch (error) {
+                        console.error('Error exporting chart:', error);
+                    }
+                }
+            }
+
+            // Add new page if needed
+            if (i < resultBlocks.length - 1 && yOffset > pageHeight - margin) {
+                doc.addPage();
+                yOffset = margin;
+            }
+        }
+
+        doc.save('results.pdf');
+    }
+
+    private extractTableData(table: HTMLTableElement) {
+        const headers: string[] = [];
+        const rows: string[][] = [];
+
+        // Extract headers
+        const headerCells = table.querySelectorAll('th');
+        headerCells.forEach(cell => headers.push(cell.textContent || ''));
+
+        // Extract rows
+        const rowElements = table.querySelectorAll('tr');
+        rowElements.forEach(row => {
+            if (row.querySelector('th')) return; // Skip header row
+            const rowData: string[] = [];
+            row.querySelectorAll('td').forEach(cell => {
+                rowData.push(cell.textContent || '');
+            });
+            if (rowData.length) rows.push(rowData);
+        });
+
+        return { headers, rows };
     }
 }
 

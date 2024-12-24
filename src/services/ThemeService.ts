@@ -1,3 +1,5 @@
+import { Chart as ChartJS } from 'chart.js';
+
 export interface ThemeColors {
     primary: string;
     background: string;
@@ -28,25 +30,18 @@ export class ThemeService {
         return this.themeColors[activeTheme as keyof typeof this.themeColors] || this.themeColors.purple;
     }
 
-    static updateChartTheme(chart: Chart, theme: string): void {
-        const colors = this.getThemeColors();
+    static updateChartTheme(chart: ChartJS, theme: string): void {
         const textColor = theme === 'white' ? '#1a1a1a' : '#ffffff';
         
-        chart.data.datasets[0].backgroundColor = colors.background;
-        chart.data.datasets[0].borderColor = colors.primary;
-        chart.options.color = textColor;
-        
-        if (chart.options.scales?.y) {
-            chart.options.scales.y.ticks.color = textColor;
-            chart.options.scales.y.border.color = textColor;
-            chart.options.scales.y.grid.color = theme === 'white' 
-                ? 'rgba(0, 0, 0, 0.1)' 
-                : 'rgba(255, 255, 255, 0.1)';
-        }
-        if (chart.options.scales?.x) {
-            chart.options.scales.x.ticks.color = textColor;
-            chart.options.scales.x.border.color = textColor;
+        if (chart.options && chart.options.scales) {
+            if (chart.options.scales.y) {
+                chart.options.scales.y.ticks = { ...chart.options.scales.y.ticks, color: textColor };
+                chart.options.scales.y.grid = { ...chart.options.scales.y.grid, color: theme === 'white' ? 'rgba(0, 0, 0, 0.1)' : 'rgba(255, 255, 255, 0.1)' };
+            }
+            if (chart.options.scales.x) {
+                chart.options.scales.x.ticks = { ...chart.options.scales.x.ticks, color: textColor };
+            }
         }
         chart.update();
     }
-} 
+}

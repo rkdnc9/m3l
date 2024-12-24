@@ -1,4 +1,4 @@
-import { ChartType, DataPoint, ChartData } from '../../types/visualization';
+import { ChartType, DataPoint, ChartData } from '../types/visualization';
 
 export function detectVisualizationIntent(question: string): boolean {
   const visualizationKeywords = [
@@ -14,14 +14,7 @@ export function detectVisualizationIntent(question: string): boolean {
   ];
   
   const questionLower = question.toLowerCase();
-  const hasVisualizationKeyword = visualizationKeywords.some(keyword => 
-    questionLower.includes(keyword)
-  );
-  
-  console.log('Question:', question);
-  console.log('Contains visualization keyword:', hasVisualizationKeyword);
-  
-  return hasVisualizationKeyword;
+  return visualizationKeywords.some(keyword => questionLower.includes(keyword));
 }
 
 export function determineChartType(data: DataPoint[], query: string): ChartType {
@@ -75,6 +68,7 @@ export function formatChartData(data: DataPoint[], chartType: ChartType): ChartD
       return {
         labels: data.map(item => String(item[labelKey])),
         datasets: [{
+          label: labelKey,
           data: data.map(item => Number(item[numericKeys[0]])),
           backgroundColor: colors,
           borderColor: colors,
@@ -135,4 +129,4 @@ function generateColors(count: number): string[] {
     colors.push(`hsl(${(i * 137.508) % 360}, 70%, 60%)`);
   }
   return colors;
-} 
+}
