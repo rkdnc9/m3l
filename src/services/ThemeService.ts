@@ -1,4 +1,4 @@
-import { Chart as ChartJS } from 'chart.js';
+import type { Chart as ChartJS } from 'chart.js';
 
 export interface ThemeColors {
     primary: string;
@@ -31,8 +31,18 @@ export class ThemeService {
     }
 
     static updateChartTheme(chart: ChartJS, theme: string): void {
+        const colors = this.themeColors[theme as keyof typeof this.themeColors];
         const textColor = theme === 'white' ? '#1a1a1a' : '#ffffff';
         
+        // Update dataset colors
+        if (chart.data.datasets) {
+            chart.data.datasets.forEach(dataset => {
+                dataset.backgroundColor = colors.background;
+                dataset.borderColor = colors.primary;
+            });
+        }
+
+        // Update text colors and grid
         if (chart.options && chart.options.scales) {
             if (chart.options.scales.y) {
                 chart.options.scales.y.ticks = { ...chart.options.scales.y.ticks, color: textColor };
@@ -40,8 +50,15 @@ export class ThemeService {
             }
             if (chart.options.scales.x) {
                 chart.options.scales.x.ticks = { ...chart.options.scales.x.ticks, color: textColor };
+                chart.options.scales.x.grid = { ...chart.options.scales.x.grid, color: theme === 'white' ? 'rgba(0, 0, 0, 0.1)' : 'rgba(255, 255, 255, 0.1)' };
             }
         }
+
+        // Update global color
+        if (chart.options) {
+            chart.options.color = textColor;
+        }
+
         chart.update();
     }
 }
