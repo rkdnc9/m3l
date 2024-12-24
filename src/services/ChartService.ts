@@ -1,4 +1,4 @@
-import { ChartConfiguration } from 'chart.js';
+import type { ChartConfiguration } from 'chart.js';
 import { ThemeService } from './ThemeService';
 
 export class ChartService {
@@ -36,7 +36,10 @@ export class ChartService {
                 scales: {
                     y: {
                         beginAtZero: true,
-                        border: { color: textColor },
+                        border: { 
+                            display: true,
+                            color: textColor 
+                        },
                         grid: {
                             color: theme === 'white' ? 'rgba(0, 0, 0, 0.1)' : 'rgba(255, 255, 255, 0.1)',
                         },
@@ -50,7 +53,10 @@ export class ChartService {
                         }
                     },
                     x: {
-                        border: { color: textColor },
+                        border: { 
+                            display: true,
+                            color: textColor 
+                        },
                         grid: { display: false },
                         ticks: {
                             color: textColor,

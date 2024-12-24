@@ -47,10 +47,12 @@ export class ThemeService {
             if (chart.options.scales.y) {
                 chart.options.scales.y.ticks = { ...chart.options.scales.y.ticks, color: textColor };
                 chart.options.scales.y.grid = { ...chart.options.scales.y.grid, color: theme === 'white' ? 'rgba(0, 0, 0, 0.1)' : 'rgba(255, 255, 255, 0.1)' };
+                chart.options.scales.y.border = { display: true, color: textColor };
             }
             if (chart.options.scales.x) {
                 chart.options.scales.x.ticks = { ...chart.options.scales.x.ticks, color: textColor };
                 chart.options.scales.x.grid = { ...chart.options.scales.x.grid, color: theme === 'white' ? 'rgba(0, 0, 0, 0.1)' : 'rgba(255, 255, 255, 0.1)' };
+                chart.options.scales.x.border = { display: true, color: textColor };
             }
         }
 
