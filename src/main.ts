@@ -40,6 +40,15 @@ class App {
         this.initializeApp();
         this.setupThemeSelector();
         ModalService.setupModal('.help-modal', '.close-help');
+        
+        // Show modal on first visit
+        if (!localStorage.getItem('hasVisited')) {
+            const helpModal = document.querySelector('.help-modal') as HTMLElement;
+            if (helpModal) {
+                helpModal.removeAttribute('hidden');
+            }
+            localStorage.setItem('hasVisited', 'true');
+        }
     }
 
     private async initializeApp() {
@@ -148,6 +157,17 @@ class App {
         const exportButton = document.getElementById('export-pdf');
         if (exportButton) {
             exportButton.addEventListener('click', () => this.exportToPDF());
+        }
+
+        // Add help icon event listener
+        const helpIcon = document.querySelector('.help-icon') as HTMLButtonElement;
+        if (helpIcon) {
+            helpIcon.addEventListener('click', () => {
+                const helpModal = document.querySelector('.help-modal') as HTMLElement;
+                if (helpModal) {
+                    helpModal.removeAttribute('hidden');
+                }
+            });
         }
     }
 

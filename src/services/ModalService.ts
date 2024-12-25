@@ -1,20 +1,22 @@
 export class ModalService {
-    static setupModal(modalSelector: string, closeSelector: string): void {
+    static setupModal(modalSelector: string, closeButtonSelector: string) {
         const modal = document.querySelector(modalSelector) as HTMLElement;
-        const closeBtn = document.querySelector(closeSelector) as HTMLElement;
+        const closeButton = document.querySelector(closeButtonSelector) as HTMLElement;
 
-        if (!modal || !closeBtn) return;
+        if (!modal || !closeButton) {
+            console.error('Modal elements not found');
+            return;
+        }
 
-        const closeModal = () => modal.setAttribute('hidden', '');
-
-        closeBtn.addEventListener('click', closeModal);
-        modal.addEventListener('click', (e) => {
-            if (e.target === modal) closeModal();
+        // Close modal when clicking the close button
+        closeButton.addEventListener('click', () => {
+            modal.setAttribute('hidden', '');
         });
 
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape' && !modal.hasAttribute('hidden')) {
-                closeModal();
+        // Close modal when clicking outside the modal content
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) {
+                modal.setAttribute('hidden', '');
             }
         });
     }
