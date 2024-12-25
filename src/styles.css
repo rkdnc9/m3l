@@ -25,6 +25,7 @@
     --white-text-primary: #1D1D1F;
     --white-text-secondary: #424245;
     --white-text-tertiary: #6E6E73;
+    --white-text-quaternary: #F5F5F7;
     --white-border-color: #D2D2D7;
     --white-gradient-primary: linear-gradient(135deg, #1D1D1F 0%, #424245 100%);
     --white-gradient-secondary: linear-gradient(135deg, #424245 0%, #1D1D1F 100%);
@@ -794,6 +795,49 @@ button:focus {
 /* When file is selected */
 .file-input-wrapper.has-file .file-name {
     color: var(--accent-primary);
+}
+
+/* Settings actions */
+.settings-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    margin-top: 24px;
+}
+
+.save-settings {
+    background: var(--gradient-primary);
+    color: var(--white-text-quaternary);
+    padding: 10px 24px;
+    border-radius: 12px;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.delete-settings {
+    background: rgba(255, 59, 48, 0.15);
+    border: 1px solid rgba(255, 59, 48, 0.3);
+    color: rgb(255, 59, 48);
+    padding: 8px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.delete-settings:hover {
+    background: rgba(255, 59, 48, 0.25);
+    border-color: rgba(255, 59, 48, 0.4);
+}
+
+.delete-settings svg {
+    width: 20px;
+    height: 20px;
+}
+
+/* Remove the close button since we're using Save as close */
+.close-settings {
+    display: none;
 }
 
 /* Color selector styling */

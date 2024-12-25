@@ -10,7 +10,8 @@ export class SettingsService {
     static setupSettingsModal() {
         const settingsIcon = document.querySelector('.settings-icon') as HTMLButtonElement;
         const settingsModal = document.querySelector('.settings-modal') as HTMLElement;
-        const closeSettings = document.querySelector('.close-settings') as HTMLButtonElement;
+        const saveSettings = document.querySelector('.save-settings') as HTMLButtonElement;
+        const deleteSettings = document.querySelector('.delete-settings') as HTMLButtonElement;
         const apiKeyInput = document.getElementById('settings-api-key') as HTMLInputElement;
         const providerSelect = document.getElementById('settings-api-provider') as HTMLSelectElement;
         const persistCheckbox = document.getElementById('persist-settings') as HTMLInputElement;
@@ -28,20 +29,8 @@ export class SettingsService {
             settingsModal.removeAttribute('hidden');
         });
 
-        // Close settings modal
-        closeSettings.addEventListener('click', () => {
-            settingsModal.setAttribute('hidden', '');
-        });
-
-        // Close when clicking outside
-        settingsModal.addEventListener('click', (e) => {
-            if (e.target === settingsModal) {
-                settingsModal.setAttribute('hidden', '');
-            }
-        });
-
-        // Save settings when inputs change
-        const saveSettings = () => {
+        // Save and close settings modal
+        saveSettings.addEventListener('click', () => {
             const settings: APISettings = {
                 apiKey: apiKeyInput.value,
                 provider: providerSelect.value as 'openai' | 'claude',
@@ -54,12 +43,24 @@ export class SettingsService {
                 localStorage.removeItem(this.STORAGE_KEY);
             }
 
-            return settings;
-        };
+            settingsModal.setAttribute('hidden', '');
+        });
 
-        apiKeyInput.addEventListener('input', saveSettings);
-        providerSelect.addEventListener('change', saveSettings);
-        persistCheckbox.addEventListener('change', saveSettings);
+        // Delete settings
+        deleteSettings.addEventListener('click', () => {
+            localStorage.removeItem(this.STORAGE_KEY);
+            apiKeyInput.value = '';
+            providerSelect.value = 'openai';
+            persistCheckbox.checked = false;
+            this.showToast('Settings deleted');
+        });
+
+        // Close when clicking outside
+        settingsModal.addEventListener('click', (e) => {
+            if (e.target === settingsModal) {
+                settingsModal.setAttribute('hidden', '');
+            }
+        });
     }
 
     static loadSettings(): APISettings | null {
@@ -77,5 +78,23 @@ export class SettingsService {
             provider: providerSelect.value as 'openai' | 'claude',
             persist: persistCheckbox.checked
         };
+    }
+
+    private static showToast(message: string) {
+        // Remove existing toast if present
+        const existingToast = document.querySelector('.toast');
+        if (existingToast) {
+            existingToast.remove();
+        }
+
+        const toast = document.createElement('div');
+        toast.className = 'toast';
+        toast.textContent = message;
+        document.body.appendChild(toast);
+
+        // Remove toast after animation completes
+        setTimeout(() => {
+            toast.remove();
+        }, 3000);
     }
 } 
