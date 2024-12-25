@@ -25,6 +25,7 @@
     --white-text-primary: #1D1D1F;
     --white-text-secondary: #424245;
     --white-text-tertiary: #6E6E73;
+    --white-text-quaternary: #F5F5F7;
     --white-border-color: #D2D2D7;
     --white-gradient-primary: linear-gradient(135deg, #1D1D1F 0%, #424245 100%);
     --white-gradient-secondary: linear-gradient(135deg, #424245 0%, #1D1D1F 100%);
@@ -103,21 +104,22 @@ body {
 .help-icon {
     width: 32px;
     height: 32px;
+    padding: 0;
     border-radius: 12px;
-    background: var(--gradient-primary);
-    color: white;
-    font-size: 16px;
+    background: rgba(var(--accent-primary-rgb), 0.15);
+    border: 1px solid rgba(var(--accent-primary-rgb), 0.3);
+    color: var(--accent-primary);
     display: flex;
     align-items: center;
     justify-content: center;
     cursor: pointer;
-    border: none;
     transition: all 0.2s ease;
 }
 
 .help-icon:hover {
+    background: rgba(var(--accent-primary-rgb), 0.25);
+    border-color: rgba(var(--accent-primary-rgb), 0.4);
     transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(191, 90, 242, 0.2);
 }
 
 /* Right Panel */
@@ -588,15 +590,21 @@ button:hover {
     width: 32px;
     height: 32px;
     padding: 0;
-    font-size: 14px;
-    background: rgba(191, 90, 242, 0.15);
-    border: 1px solid rgba(191, 90, 242, 0.3);
+    border-radius: 12px;
+    background: rgba(var(--accent-primary-rgb), 0.15);
+    border: 1px solid rgba(var(--accent-primary-rgb), 0.3);
     color: var(--accent-primary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
 }
 
 .help-icon:hover {
-    background: rgba(191, 90, 242, 0.25);
-    border-color: rgba(191, 90, 242, 0.4);
+    background: rgba(var(--accent-primary-rgb), 0.25);
+    border-color: rgba(var(--accent-primary-rgb), 0.4);
+    transform: translateY(-1px);
 }
 
 /* Close modal button */
@@ -794,6 +802,177 @@ button:focus {
 /* When file is selected */
 .file-input-wrapper.has-file .file-name {
     color: var(--accent-primary);
+}
+
+.results-actions {
+    padding: 12px 24px;
+    border-bottom: 1px solid var(--border-color);
+    display: flex;
+    justify-content: flex-end;
+}
+
+.action-buttons {
+    display: flex;
+    gap: 8px;
+}
+
+.action-button {
+    width: 32px;
+    height: 32px;
+    padding: 0;
+    border-radius: 8px;
+    background: rgba(var(--accent-primary-rgb), 0.1);
+    border: 1px solid rgba(var(--accent-primary-rgb), 0.2);
+    color: var(--accent-primary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.action-button:hover {
+    background: rgba(var(--accent-primary-rgb), 0.15);
+    border-color: rgba(var(--accent-primary-rgb), 0.3);
+    transform: translateY(-1px);
+}
+
+#clear-results {
+    background: rgba(255, 59, 48, 0.1);
+    border: 1px solid rgba(255, 59, 48, 0.2);
+    color: rgb(255, 59, 48);
+}
+
+#clear-results:hover {
+    background: rgba(255, 59, 48, 0.15);
+    border-color: rgba(255, 59, 48, 0.3);
+}
+
+/* Theme-specific styles */
+.theme-white .action-button {
+    background: var(--bg-secondary);
+    border-color: var(--border-color);
+}
+
+.theme-white .action-button:hover {
+    background: var(--bg-primary);
+    border-color: var(--accent-primary);
+}
+
+.theme-white #clear-results {
+    border-color: rgba(255, 59, 48, 0.2);
+}
+
+.theme-white #clear-results:hover {
+    border-color: rgb(255, 59, 48);
+}
+
+/* Add these styles */
+.clear-button {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+    padding: 8px 16px;
+    background: rgba(255, 59, 48, 0.1);
+    border: 1px solid rgba(255, 59, 48, 0.2);
+    color: rgb(255, 59, 48);
+    margin-right: auto;
+}
+
+.clear-button:hover {
+    background: rgba(255, 59, 48, 0.15);
+    border-color: rgba(255, 59, 48, 0.3);
+}
+
+.result-block {
+    position: relative;
+}
+
+.delete-result {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    width: 28px;
+    height: 28px;
+    padding: 0;
+    border-radius: 8px;
+    background: rgba(255, 59, 48, 0.1);
+    border: 1px solid rgba(255, 59, 48, 0.2);
+    color: rgb(255, 59, 48);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.delete-result:hover {
+    background: rgba(255, 59, 48, 0.15);
+    border-color: rgba(255, 59, 48, 0.3);
+    transform: translateY(-1px);
+}
+
+.delete-result svg {
+    width: 16px;
+    height: 16px;
+}
+
+/* Theme-specific styles */
+.theme-white .clear-button,
+.theme-white .delete-result {
+    background: var(--bg-secondary);
+    border-color: var(--border-color);
+    color: rgb(255, 59, 48);
+}
+
+.theme-white .clear-button:hover,
+.theme-white .delete-result:hover {
+    background: var(--bg-primary);
+    border-color: rgb(255, 59, 48);
+}
+
+/* Settings actions */
+.settings-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    margin-top: 24px;
+}
+
+.save-settings {
+    background: var(--gradient-primary);
+    color: var(--white-text-quaternary);
+    padding: 10px 24px;
+    border-radius: 12px;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.delete-settings {
+    background: rgba(255, 59, 48, 0.15);
+    border: 1px solid rgba(255, 59, 48, 0.3);
+    color: rgb(255, 59, 48);
+    padding: 8px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.delete-settings:hover {
+    background: rgba(255, 59, 48, 0.25);
+    border-color: rgba(255, 59, 48, 0.4);
+}
+
+.delete-settings svg {
+    width: 20px;
+    height: 20px;
+}
+
+/* Remove the close button since we're using Save as close */
+.close-settings {
+    display: none;
 }
 
 /* Color selector styling */
@@ -1175,38 +1354,42 @@ select:hover {
 }
 
 .query-options {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 8px;
-    padding: 0 4px;
+    display: none;
 }
 
 .shortcut-option {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    font-size: 12px;
-    color: var(--text-secondary);
-    cursor: pointer;
-    margin-right: auto;
+    display: none;
 }
 
-.shortcut-option input[type="checkbox"] {
-    width: 14px;
-    height: 14px;
+/* Update the settings form styles */
+.settings-form .form-group {
+    margin-bottom: 16px;
+}
+
+.checkbox-label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    color: var(--text-secondary);
+    font-size: 14px;
+}
+
+.checkbox-label input[type="checkbox"] {
+    width: 16px;
+    height: 16px;
     margin: 0;
     cursor: pointer;
     accent-color: var(--accent-primary);
 }
 
-.checkbox-text {
+.checkbox-label span {
     user-select: none;
 }
 
 .query-section {
     display: flex;
-    flex-direction: column;
+        flex-direction: column;
     gap: 12px;
 }
 
@@ -1491,4 +1674,248 @@ body.theme-white .table-container::-webkit-scrollbar-thumb:hover {
     font-weight: 500;
     margin-bottom: 16px;
     color: var(--text-color);
+}
+
+/* Settings Icon */
+.settings-icon {
+    width: 32px;
+    height: 32px;
+    padding: 0;
+    border-radius: 12px;
+    background: rgba(var(--accent-primary-rgb), 0.15);
+    border: 1px solid rgba(var(--accent-primary-rgb), 0.3);
+    color: var(--accent-primary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.settings-icon:hover {
+    background: rgba(var(--accent-primary-rgb), 0.25);
+    border-color: rgba(var(--accent-primary-rgb), 0.4);
+    transform: translateY(-1px);
+}
+
+.settings-icon svg {
+    width: 20px;
+    height: 20px;
+    color: currentColor;
+}
+
+/* Theme-specific styles for settings icon */
+.theme-purple .settings-icon {
+    --accent-primary-rgb: 189, 0, 255;
+}
+
+.theme-amber .settings-icon {
+    --accent-primary-rgb: 255, 159, 10;
+}
+
+.theme-white .settings-icon {
+    --accent-primary-rgb: 0, 0, 0;
+}
+
+.theme-help-section {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 20px;
+}
+
+/* Settings Modal */
+.settings-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.8);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    backdrop-filter: blur(8px);
+    opacity: 1;
+    transition: opacity 0.3s ease;
+}
+
+.settings-modal[hidden] {
+    display: none;
+    opacity: 0;
+}
+
+.settings-content {
+    background: var(--bg-secondary);
+    padding: 32px;
+    border-radius: 20px;
+    width: 400px;
+    position: relative;
+    border: 1px solid var(--border-color);
+    box-shadow: var(--shadow-sharp);
+    animation: modal-in 0.3s ease-out;
+}
+
+.settings-content h2 {
+    margin-bottom: 24px;
+    color: var(--accent-primary);
+    font-size: 20px;
+}
+
+.settings-form {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.form-group label {
+    color: var(--text-secondary);
+    font-size: 14px;
+}
+
+.checkbox-label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    color: var(--text-secondary);
+    font-size: 14px;
+}
+
+.checkbox-label input[type="checkbox"] {
+    width: 16px;
+    height: 16px;
+    margin: 0;
+    cursor: pointer;
+    accent-color: var(--accent-primary);
+}
+
+.checkbox-label span {
+    user-select: none;
+}
+
+.close-settings {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    width: 32px;
+    height: 32px;
+    border-radius: 12px;
+    background: var(--gradient-primary);
+    border: none;
+    color: var(--text-primary);
+    font-size: 16px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+}
+
+.close-settings:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(var(--accent-primary-rgb), 0.2);
+}
+
+/* Smart File/URL Input Section */
+.file-section {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 20px;
+    position: relative;
+}
+
+.smart-input-wrapper {
+    flex: 1;
+    position: relative;
+    display: flex;
+    align-items: stretch;
+    gap: 8px;
+}
+
+.smart-input {
+    flex: 1;
+    padding: 12px 16px;
+    background: rgba(0, 0, 0, 0.2);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    color: var(--text-primary);
+    font-family: var(--font-mono);
+    font-size: 14px;
+    transition: all 0.2s ease;
+    height: 42px;
+    box-sizing: border-box;
+}
+
+.smart-input:hover {
+    border-color: var(--accent-primary);
+    background: rgba(var(--accent-primary-rgb), 0.1);
+}
+
+.smart-input:focus {
+    outline: none;
+    border-color: var(--accent-primary);
+    box-shadow: 0 0 0 2px rgba(var(--accent-primary-rgb), 0.1);
+}
+
+.input-icon {
+    display: none;
+}
+
+.smart-input[data-type="url"] + .input-icon {
+    color: var(--accent-primary);
+}
+
+.smart-input-wrapper.dragging .smart-input {
+    background: rgba(var(--accent-primary-rgb), 0.15);
+    border-color: var(--accent-primary);
+    border-style: dashed;
+}
+
+.file-select-btn {
+    width: 42px;
+    height: 42px;
+    padding: 0;
+    background: rgba(0, 0, 0, 0.2);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    color: var(--text-primary);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+    flex-shrink: 0;
+    box-sizing: border-box;
+}
+
+.file-select-btn:hover {
+    border-color: var(--accent-primary);
+    background: rgba(var(--accent-primary-rgb), 0.1);
+    color: var(--accent-primary);
+}
+
+.file-select-btn svg {
+    transition: transform 0.2s ease;
+}
+
+.file-select-btn:hover svg {
+    transform: rotate(180deg);
+}
+
+/* Theme-specific styles */
+.theme-white .file-select-btn {
+    background: var(--bg-primary);
+}
+
+.theme-white .file-select-btn:hover {
+    background: var(--bg-secondary);
 }

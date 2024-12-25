@@ -17,6 +17,7 @@ import { ModalService } from './services/ModalService';
 import { ChartService } from './services/ChartService';
 import { jsPDF } from 'jspdf';
 import autoTable from 'jspdf-autotable';
+import { SettingsService } from './services/SettingsService';
 
 // Register Chart.js components
 ChartJS.register(
@@ -40,6 +41,16 @@ class App {
         this.initializeApp();
         this.setupThemeSelector();
         ModalService.setupModal('.help-modal', '.close-help');
+        SettingsService.setupSettingsModal();
+        
+        // Show help modal on first visit
+        if (!localStorage.getItem('hasVisited')) {
+            const helpModal = document.querySelector('.help-modal') as HTMLElement;
+            if (helpModal) {
+                helpModal.removeAttribute('hidden');
+            }
+            localStorage.setItem('hasVisited', 'true');
+        }
     }
 
     private async initializeApp() {
@@ -47,93 +58,119 @@ class App {
         this.setupEventListeners();
     }
 
+    private isValidUrl(str: string): boolean {
+        try {
+            new URL(str);
+            return true;
+        } catch {
+            return false;
+        }
+    }
+
     private setupEventListeners() {
         const uploadBtn = document.getElementById('upload-btn') as HTMLButtonElement;
         const submitBtn = document.getElementById('submit-query') as HTMLButtonElement;
-        const apiKeyInput = document.getElementById('api-key') as HTMLInputElement;
-        const providerSelect = document.getElementById('api-provider') as HTMLSelectElement;
+        const dataSourceInput = document.getElementById('data-source') as HTMLInputElement;
         const fileInput = document.getElementById('file-input') as HTMLInputElement;
-        const fileSection = document.querySelector('.file-section') as HTMLElement;
-        const fileName = document.querySelector('.file-name') as HTMLElement;
+        const fileSelectBtn = document.querySelector('.file-select-btn') as HTMLButtonElement;
+        const smartInputWrapper = document.querySelector('.smart-input-wrapper') as HTMLElement;
 
-        uploadBtn.addEventListener('click', () => {
-            fileInput.click();
+        // File upload button click
+        uploadBtn?.addEventListener('click', () => {
+            fileInput?.click();
         });
-        submitBtn.addEventListener('click', () => this.handleQuery());
-        
-        // Update LLM handler immediately if API key is present
-        if (apiKeyInput.value) {
-            this.llm = new LLMHandler(
-                apiKeyInput.value,
-                providerSelect.value as 'openai' | 'claude'
-            );
-        }
 
-        // Listen for changes in API key
-        apiKeyInput.addEventListener('input', () => {
-            if (apiKeyInput.value) {
-                this.llm = new LLMHandler(
-                    apiKeyInput.value,
-                    providerSelect.value as 'openai' | 'claude'
-                );
-            } else {
-                this.llm = null;
+        // Submit query button click
+        submitBtn?.addEventListener('click', () => this.handleQuery());
+
+        // Handle drag and drop
+        smartInputWrapper.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            smartInputWrapper.classList.add('dragging');
+        });
+
+        smartInputWrapper.addEventListener('dragleave', () => {
+            smartInputWrapper.classList.remove('dragging');
+        });
+
+        smartInputWrapper.addEventListener('drop', async (e) => {
+            e.preventDefault();
+            smartInputWrapper.classList.remove('dragging');
+            
+            if (e.dataTransfer?.files.length) {
+                const file = e.dataTransfer.files[0];
+                await this.handleFileInput(file);
             }
         });
 
-        // Listen for changes in provider
-        providerSelect.addEventListener('change', () => {
-            if (apiKeyInput.value) {
-                this.llm = new LLMHandler(
-                    apiKeyInput.value,
-                    providerSelect.value as 'openai' | 'claude'
-                );
+        // Update URL input handler to only set the data-type attribute
+        dataSourceInput.addEventListener('input', (e) => {
+            const input = e.target as HTMLInputElement;
+            const value = input.value.trim();
+
+            // Skip processing if the input is empty
+            if (!value) {
+                input.removeAttribute('data-type');
+                return;
+            }
+
+            if (this.isValidUrl(value)) {
+                input.setAttribute('data-type', 'url');
+            } else {
+                input.removeAttribute('data-type');
+            }
+        });
+
+        // File select button click handler
+        fileSelectBtn?.addEventListener('click', async () => {
+            const inputValue = dataSourceInput.value.trim();
+            
+            if (inputValue) {
+                // If there's text in the input, treat it as a URL
+                if (this.isValidUrl(inputValue)) {
+                    try {
+                        await this.handleUrlInput(inputValue);
+                    } catch (error) {
+                        this.showToast(`Error loading API endpoint: ${error}`);
+                    }
+                } else {
+                    this.showToast('Please enter a valid URL or clear the field to select a file');
+                }
+            } else {
+                // If no text, open file selector
+                fileInput.click();
             }
         });
 
         // Handle file selection
         fileInput.addEventListener('change', async (event) => {
             const target = event.target as HTMLInputElement;
-            if (target.files && target.files[0]) {
-                try {
-                    this.schema = await this.duckdb.loadFile(target.files[0]);
-                    fileName.textContent = target.files[0].name;
-                    fileSection.classList.add('has-file');
-                    this.showToast('File loaded successfully');
-                } catch (error) {
-                    fileName.textContent = 'No file selected';
-                    fileSection.classList.remove('has-file');
-                    this.showToast(`Error loading file: ${error}`);
-                }
-            } else {
-                fileName.textContent = 'No file selected';
-                fileSection.classList.remove('has-file');
+            if (target.files?.[0]) {
+                await this.handleFileInput(target.files[0]);
             }
         });
 
+        // Handle keyboard shortcuts for query
         const textarea = document.getElementById('nl-query') as HTMLTextAreaElement;
         const shortcutCheckbox = document.getElementById('enable-shortcut') as HTMLInputElement;
-        const submitButton = document.getElementById('submit-query') as HTMLButtonElement;
         
         // Save checkbox state to localStorage
-        shortcutCheckbox.addEventListener('change', () => {
+        shortcutCheckbox?.addEventListener('change', () => {
             localStorage.setItem('enableShortcut', shortcutCheckbox.checked.toString());
         });
 
         // Load saved checkbox state
         const savedShortcutState = localStorage.getItem('enableShortcut');
-        if (savedShortcutState !== null) {
+        if (savedShortcutState !== null && shortcutCheckbox) {
             shortcutCheckbox.checked = savedShortcutState === 'true';
         }
 
         // Handle keyboard shortcuts
-        textarea.addEventListener('keydown', async (e) => {
-            if (!shortcutCheckbox.checked) return;
+        textarea?.addEventListener('keydown', async (e) => {
+            if (!shortcutCheckbox?.checked) return;
             
             const isMac = navigator.platform.toUpperCase().indexOf('MAC') >= 0;
             
-            // Check for both Command+Enter (Mac) and Ctrl+Enter (Windows)
-            // Also allow plain Enter if checkbox is checked
             const shouldTrigger = e.key === 'Enter' && (
                 (!isMac && !e.shiftKey) || // Windows/Linux: Enter without shift
                 (isMac && (e.metaKey || !e.shiftKey)) // Mac: Command+Enter or Enter without shift
@@ -141,20 +178,35 @@ class App {
 
             if (shouldTrigger) {
                 e.preventDefault();
-                submitButton.click(); // Trigger the button click event
+                submitBtn?.click();
             }
         });
 
+        // Export button
         const exportButton = document.getElementById('export-pdf');
-        if (exportButton) {
-            exportButton.addEventListener('click', () => this.exportToPDF());
-        }
+        exportButton?.addEventListener('click', () => this.exportToPDF());
+
+        // Help icon
+        const helpIcon = document.querySelector('.help-icon') as HTMLButtonElement;
+        helpIcon?.addEventListener('click', () => {
+            const helpModal = document.querySelector('.help-modal') as HTMLElement;
+            if (helpModal) {
+                helpModal.removeAttribute('hidden');
+            }
+        });
+
+        // Add clear results button handler
+        const clearButton = document.getElementById('clear-results');
+        clearButton?.addEventListener('click', () => this.clearAllResults());
     }
 
     private async handleQuery() {
         if (!this.validateQueryPrerequisites()) return;
 
         try {
+            const settings = SettingsService.getCurrentSettings();
+            this.llm = new LLMHandler(settings.apiKey, settings.provider);
+            
             const queryInput = document.getElementById('nl-query') as HTMLTextAreaElement;
             const query = queryInput.value;
             const shouldVisualize = detectVisualizationIntent(query);
@@ -176,14 +228,9 @@ class App {
             return false;
         }
 
-        const queryInput = document.getElementById('nl-query') as HTMLTextAreaElement;
-        if (!queryInput.value) {
-            this.showToast('Please enter a query');
-            return false;
-        }
-
-        if (!this.llm) {
-            this.showToast('Please enter an API key');
+        const settings = SettingsService.getCurrentSettings();
+        if (!settings.apiKey) {
+            this.showToast('Please enter an API key in settings');
             return false;
         }
 
@@ -200,6 +247,19 @@ class App {
         // Create a new result block
         const resultBlock = document.createElement('div');
         resultBlock.className = 'result-block';
+
+        // Add delete button
+        const deleteButton = document.createElement('button');
+        deleteButton.className = 'delete-result';
+        deleteButton.innerHTML = `
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M7 21c-.55 0-1.02-.196-1.412-.587A1.927 1.927 0 0 1 5 19V6H4V4h5V3h6v1h5v2h-1v13c0 .55-.196 1.02-.587 1.413A1.927 1.927 0 0 1 17 21H7ZM17 6H7v13h10V6ZM9 17h2V8H9v9Zm4 0h2V8h-2v9ZM7 6v13V6Z" fill="currentColor"/>
+            </svg>
+        `;
+        deleteButton.addEventListener('click', () => {
+            resultBlock.remove();
+        });
+        resultBlock.appendChild(deleteButton);
 
         // Add question display
         const questionDisplay = document.createElement('div');
@@ -454,6 +514,46 @@ class App {
         });
 
         return { headers, rows };
+    }
+
+    private async handleFileInput(file: File) {
+        const dataSourceInput = document.getElementById('data-source') as HTMLInputElement;
+        try {
+            this.schema = await this.duckdb.loadFile(file);
+            dataSourceInput.value = file.name;
+            this.showToast('File loaded successfully');
+        } catch (error) {
+            console.error('Error loading file:', error);
+            dataSourceInput.value = '';
+            this.showToast(`Error loading file: ${error}`);
+        }
+    }
+
+    private async handleUrlInput(url: string) {
+        try {
+            const response = await fetch(url);
+            if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+            
+            const data = await response.json();
+            
+            // Convert the JSON data to a Blob that can be handled by DuckDB
+            const blob = new Blob([JSON.stringify(data)], { type: 'application/json' });
+            const file = new File([blob], 'api-data.json', { type: 'application/json' });
+            
+            this.schema = await this.duckdb.loadFile(file);
+            this.showToast('API data loaded successfully');
+        } catch (error) {
+            console.error('Error loading API data:', error);
+            this.showToast(`Error loading API data: ${error}`);
+            throw error;
+        }
+    }
+
+    private clearAllResults() {
+        const resultsContainer = document.querySelector('.results-container');
+        if (resultsContainer) {
+            resultsContainer.innerHTML = '';
+        }
     }
 }
 

@@ -31,31 +31,36 @@
                                 <span class="color-dot"></span>
                             </button>
                         </div>
-                        <button class="help-icon" aria-label="Show Help">?</button>
-                    </div>
-
-                    <div class="api-key-section">
-                        <input type="password" id="api-key" placeholder="Enter OpenAI/Claude API Key">
-                        <select id="api-provider">
-                            <option value="openai">OpenAI</option>
-                            <option value="claude">Claude</option>
-                        </select>
+                        <button class="settings-icon" aria-label="Settings">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M9.25 22l-.4-3.2q-.325-.125-.612-.3-.288-.175-.563-.375L4.7 19.375l-2.75-4.75 2.575-1.95Q4.5 12.5 4.5 12.337v-.675q0-.162.025-.337L1.95 9.375l2.75-4.75 2.975 1.25q.275-.2.575-.375.3-.175.6-.3l.4-3.2h5.5l.4 3.2q.325.125.613.3.287.175.562.375l2.975-1.25 2.75 4.75-2.575 1.95q.025.175.025.337v.675q0 .163-.05.338l2.575 1.95-2.75 4.75-2.95-1.25q-.275.2-.575.375-.3.175-.6.3l-.4 3.2h-5.5Zm2.8-6.5q1.45 0 2.475-1.025Q15.55 13.45 15.55 12q0-1.45-1.025-2.475Q12.5 8.5 11.05 8.5q-1.475 0-2.488 1.025Q7.55 10.55 7.55 12q0 1.45 1.012 2.475Q9.575 15.5 12.05 15.5Z" fill="currentColor"/>
+                            </svg>
+                        </button>
+                        <button class="help-icon" aria-label="Show Help">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M11.07 12.85c.77-1.39 2.25-2.21 3.11-3.44.91-1.29.4-3.7-2.18-3.7-1.69 0-2.52 1.28-2.87 2.34L6.54 6.96C7.25 4.83 9.18 3 11.99 3c2.35 0 3.96 1.07 4.78 2.41.7 1.15 1.11 3.3.03 4.9-1.2 1.77-2.35 2.31-2.97 3.45-.25.46-.35.76-.35 2.24h-2.89c-.01-.78-.13-2.05.48-3.15zM14 20c0 1.1-.9 2-2 2s-2-.9-2-2 .9-2 2-2 2 .9 2 2z" fill="currentColor"/>
+                            </svg>
+                        </button>
                     </div>
 
                     <div class="file-section">
-                        <button id="upload-btn">Select File</button>
-                        <input type="file" id="file-input" accept=".csv,.json">
-                        <span class="file-name">No file selected</span>
+                        <div class="smart-input-wrapper">
+                            <input type="text" 
+                                   class="smart-input" 
+                                   id="data-source"
+                                   placeholder="Drag & drop a file or paste an API endpoint URL"
+                                   spellcheck="false">
+                            <input type="file" id="file-input" accept=".csv,.json" hidden>
+                            <button class="file-select-btn" title="Load File or URL">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z" fill="currentColor"/>
+                                </svg>
+                            </button>
+                        </div>
                     </div>
 
                     <div class="query-section">
                         <textarea id="nl-query" placeholder="Ask a question about your data..."></textarea>
-                        <div class="query-options">
-                            <label class="shortcut-option">
-                                <input type="checkbox" id="enable-shortcut" checked>
-                                <span class="checkbox-text">Use ⌘/Enter to ask question</span>
-                            </label>
-                        </div>
                         <button id="submit-query">Ask Question</button>
                     </div>
                 </div>
@@ -65,12 +70,18 @@
             <div class="results-panel">
                 <div class="results-section">
                     <div class="results-actions">
-                        <button id="export-pdf" class="export-button" title="Export as PDF">
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z" fill="currentColor"/>
-                            </svg>
-                            Export PDF
-                        </button>
+                        <div class="action-buttons">
+                            <button id="clear-results" class="action-button" title="Clear All Results">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M7 21c-.55 0-1.02-.196-1.412-.587A1.927 1.927 0 0 1 5 19V6H4V4h5V3h6v1h5v2h-1v13c0 .55-.196 1.02-.587 1.413A1.927 1.927 0 0 1 17 21H7ZM17 6H7v13h10V6ZM9 17h2V8H9v9Zm4 0h2V8h-2v9ZM7 6v13V6Z" fill="currentColor"/>
+                                </svg>
+                            </button>
+                            <button id="export-pdf" class="action-button" title="Export as PDF">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z" fill="currentColor"/>
+                                </svg>
+                            </button>
+                        </div>
                     </div>
                     <div class="results-container">
                         <!-- Individual result blocks will be added here -->
@@ -92,6 +103,46 @@
                     <li>All analysis happens right on your computer</li>
                     <li>Only basic data structure is shared with your AI provider</li>
                 </ul>
+            </div>
+        </div>
+
+        <!-- Add Settings Modal -->
+        <div class="settings-modal" hidden>
+            <div class="settings-content">
+                <h2>Settings</h2>
+                <div class="settings-form">
+                    <div class="form-group">
+                        <label for="settings-api-key">API Key</label>
+                        <input type="password" id="settings-api-key" placeholder="Enter OpenAI/Claude API Key">
+                    </div>
+                    <div class="form-group">
+                        <label for="settings-api-provider">API Provider</label>
+                        <select id="settings-api-provider">
+                            <option value="openai">OpenAI</option>
+                            <option value="claude">Claude</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="persist-settings">
+                            <span>Keep the key and service persisted</span>
+                        </label>
+                    </div>
+                    <div class="form-group">
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="enable-shortcut" checked>
+                            <span>Use ⌘/Enter to ask question</span>
+                        </label>
+                    </div>
+                    <div class="settings-actions">
+                        <button class="delete-settings" title="Delete saved settings">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M7 21c-.55 0-1.02-.196-1.412-.587A1.927 1.927 0 0 1 5 19V6H4V4h5V3h6v1h5v2h-1v13c0 .55-.196 1.02-.587 1.413A1.927 1.927 0 0 1 17 21H7ZM17 6H7v13h10V6ZM9 17h2V8H9v9Zm4 0h2V8h-2v9ZM7 6v13V6Z" fill="currentColor"/>
+                            </svg>
+                        </button>
+                        <button class="save-settings">Save</button>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
