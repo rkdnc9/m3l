@@ -18,6 +18,7 @@ import { ChartService } from './services/ChartService';
 import { jsPDF } from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import { SettingsService } from './services/SettingsService';
+import { VoiceService } from './services/VoiceService';
 
 // Register Chart.js components
 ChartJS.register(
@@ -198,6 +199,13 @@ class App {
         // Add clear results button handler
         const clearButton = document.getElementById('clear-results');
         clearButton?.addEventListener('click', () => this.clearAllResults());
+
+        // Initialize voice input
+        const voiceButton = document.querySelector('.voice-input-btn') as HTMLButtonElement;
+        const queryTextarea = document.getElementById('nl-query') as HTMLTextAreaElement;
+        if (voiceButton && queryTextarea) {
+            new VoiceService(voiceButton, queryTextarea);
+        }
     }
 
     private async handleQuery() {
