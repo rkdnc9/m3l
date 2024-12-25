@@ -72,6 +72,7 @@ class App {
         const submitBtn = document.getElementById('submit-query') as HTMLButtonElement;
         const dataSourceInput = document.getElementById('data-source') as HTMLInputElement;
         const fileInput = document.getElementById('file-input') as HTMLInputElement;
+        const fileSelectBtn = document.querySelector('.file-select-btn') as HTMLButtonElement;
         const smartInputWrapper = document.querySelector('.smart-input-wrapper') as HTMLElement;
 
         // File upload button click
@@ -102,23 +103,8 @@ class App {
             }
         });
 
-        // Handle click to upload
-        dataSourceInput.addEventListener('click', () => {
-            if (!dataSourceInput.value) {
-                fileInput.click();
-            }
-        });
-
-        // Handle file selection
-        fileInput.addEventListener('change', async (event) => {
-            const target = event.target as HTMLInputElement;
-            if (target.files?.[0]) {
-                await this.handleFileInput(target.files[0]);
-            }
-        });
-
-        // Handle URL input
-        dataSourceInput.addEventListener('input', async (e) => {
+        // Update URL input handler to only set the data-type attribute
+        dataSourceInput.addEventListener('input', (e) => {
             const input = e.target as HTMLInputElement;
             const value = input.value.trim();
 
@@ -130,13 +116,37 @@ class App {
 
             if (this.isValidUrl(value)) {
                 input.setAttribute('data-type', 'url');
-                try {
-                    await this.handleUrlInput(value);
-                } catch (error) {
-                    this.showToast(`Error loading API endpoint: ${error}`);
-                }
             } else {
                 input.removeAttribute('data-type');
+            }
+        });
+
+        // File select button click handler
+        fileSelectBtn?.addEventListener('click', async () => {
+            const inputValue = dataSourceInput.value.trim();
+            
+            if (inputValue) {
+                // If there's text in the input, treat it as a URL
+                if (this.isValidUrl(inputValue)) {
+                    try {
+                        await this.handleUrlInput(inputValue);
+                    } catch (error) {
+                        this.showToast(`Error loading API endpoint: ${error}`);
+                    }
+                } else {
+                    this.showToast('Please enter a valid URL or clear the field to select a file');
+                }
+            } else {
+                // If no text, open file selector
+                fileInput.click();
+            }
+        });
+
+        // Handle file selection
+        fileInput.addEventListener('change', async (event) => {
+            const target = event.target as HTMLInputElement;
+            if (target.files?.[0]) {
+                await this.handleFileInput(target.files[0]);
             }
         });
 

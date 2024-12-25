@@ -1683,10 +1683,13 @@ body.theme-white .table-container::-webkit-scrollbar-thumb:hover {
 .smart-input-wrapper {
     flex: 1;
     position: relative;
+    display: flex;
+    align-items: stretch;
+    gap: 8px;
 }
 
 .smart-input {
-    width: 100%;
+    flex: 1;
     padding: 12px 16px;
     background: rgba(0, 0, 0, 0.2);
     border: 1px solid var(--border-color);
@@ -1695,6 +1698,8 @@ body.theme-white .table-container::-webkit-scrollbar-thumb:hover {
     font-family: var(--font-mono);
     font-size: 14px;
     transition: all 0.2s ease;
+    height: 42px;
+    box-sizing: border-box;
 }
 
 .smart-input:hover {
@@ -1720,4 +1725,44 @@ body.theme-white .table-container::-webkit-scrollbar-thumb:hover {
     background: rgba(var(--accent-primary-rgb), 0.15);
     border-color: var(--accent-primary);
     border-style: dashed;
+}
+
+.file-select-btn {
+    width: 42px;
+    height: 42px;
+    padding: 0;
+    background: rgba(0, 0, 0, 0.2);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    color: var(--text-primary);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+    flex-shrink: 0;
+    box-sizing: border-box;
+}
+
+.file-select-btn:hover {
+    border-color: var(--accent-primary);
+    background: rgba(var(--accent-primary-rgb), 0.1);
+    color: var(--accent-primary);
+}
+
+.file-select-btn svg {
+    transition: transform 0.2s ease;
+}
+
+.file-select-btn:hover svg {
+    transform: rotate(180deg);
+}
+
+/* Theme-specific styles */
+.theme-white .file-select-btn {
+    background: var(--bg-primary);
+}
+
+.theme-white .file-select-btn:hover {
+    background: var(--bg-secondary);
 }
