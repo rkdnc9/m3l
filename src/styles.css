@@ -797,6 +797,134 @@ button:focus {
     color: var(--accent-primary);
 }
 
+.results-actions {
+    padding: 12px 24px;
+    border-bottom: 1px solid var(--border-color);
+    display: flex;
+    justify-content: flex-end;
+}
+
+.action-buttons {
+    display: flex;
+    gap: 8px;
+}
+
+.action-button {
+    width: 32px;
+    height: 32px;
+    padding: 0;
+    border-radius: 8px;
+    background: rgba(var(--accent-primary-rgb), 0.1);
+    border: 1px solid rgba(var(--accent-primary-rgb), 0.2);
+    color: var(--accent-primary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.action-button:hover {
+    background: rgba(var(--accent-primary-rgb), 0.15);
+    border-color: rgba(var(--accent-primary-rgb), 0.3);
+    transform: translateY(-1px);
+}
+
+#clear-results {
+    background: rgba(255, 59, 48, 0.1);
+    border: 1px solid rgba(255, 59, 48, 0.2);
+    color: rgb(255, 59, 48);
+}
+
+#clear-results:hover {
+    background: rgba(255, 59, 48, 0.15);
+    border-color: rgba(255, 59, 48, 0.3);
+}
+
+/* Theme-specific styles */
+.theme-white .action-button {
+    background: var(--bg-secondary);
+    border-color: var(--border-color);
+}
+
+.theme-white .action-button:hover {
+    background: var(--bg-primary);
+    border-color: var(--accent-primary);
+}
+
+.theme-white #clear-results {
+    border-color: rgba(255, 59, 48, 0.2);
+}
+
+.theme-white #clear-results:hover {
+    border-color: rgb(255, 59, 48);
+}
+
+/* Add these styles */
+.clear-button {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+    padding: 8px 16px;
+    background: rgba(255, 59, 48, 0.1);
+    border: 1px solid rgba(255, 59, 48, 0.2);
+    color: rgb(255, 59, 48);
+    margin-right: auto;
+}
+
+.clear-button:hover {
+    background: rgba(255, 59, 48, 0.15);
+    border-color: rgba(255, 59, 48, 0.3);
+}
+
+.result-block {
+    position: relative;
+}
+
+.delete-result {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    width: 28px;
+    height: 28px;
+    padding: 0;
+    border-radius: 8px;
+    background: rgba(255, 59, 48, 0.1);
+    border: 1px solid rgba(255, 59, 48, 0.2);
+    color: rgb(255, 59, 48);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.delete-result:hover {
+    background: rgba(255, 59, 48, 0.15);
+    border-color: rgba(255, 59, 48, 0.3);
+    transform: translateY(-1px);
+}
+
+.delete-result svg {
+    width: 16px;
+    height: 16px;
+}
+
+/* Theme-specific styles */
+.theme-white .clear-button,
+.theme-white .delete-result {
+    background: var(--bg-secondary);
+    border-color: var(--border-color);
+    color: rgb(255, 59, 48);
+}
+
+.theme-white .clear-button:hover,
+.theme-white .delete-result:hover {
+    background: var(--bg-primary);
+    border-color: rgb(255, 59, 48);
+}
+
 /* Settings actions */
 .settings-actions {
     display: flex;

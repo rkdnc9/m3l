@@ -194,6 +194,10 @@ class App {
                 helpModal.removeAttribute('hidden');
             }
         });
+
+        // Add clear results button handler
+        const clearButton = document.getElementById('clear-results');
+        clearButton?.addEventListener('click', () => this.clearAllResults());
     }
 
     private async handleQuery() {
@@ -243,6 +247,19 @@ class App {
         // Create a new result block
         const resultBlock = document.createElement('div');
         resultBlock.className = 'result-block';
+
+        // Add delete button
+        const deleteButton = document.createElement('button');
+        deleteButton.className = 'delete-result';
+        deleteButton.innerHTML = `
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M7 21c-.55 0-1.02-.196-1.412-.587A1.927 1.927 0 0 1 5 19V6H4V4h5V3h6v1h5v2h-1v13c0 .55-.196 1.02-.587 1.413A1.927 1.927 0 0 1 17 21H7ZM17 6H7v13h10V6ZM9 17h2V8H9v9Zm4 0h2V8h-2v9ZM7 6v13V6Z" fill="currentColor"/>
+            </svg>
+        `;
+        deleteButton.addEventListener('click', () => {
+            resultBlock.remove();
+        });
+        resultBlock.appendChild(deleteButton);
 
         // Add question display
         const questionDisplay = document.createElement('div');
@@ -529,6 +546,13 @@ class App {
             console.error('Error loading API data:', error);
             this.showToast(`Error loading API data: ${error}`);
             throw error;
+        }
+    }
+
+    private clearAllResults() {
+        const resultsContainer = document.querySelector('.results-container');
+        if (resultsContainer) {
+            resultsContainer.innerHTML = '';
         }
     }
 }

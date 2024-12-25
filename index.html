@@ -72,12 +72,18 @@
             <div class="results-panel">
                 <div class="results-section">
                     <div class="results-actions">
-                        <button id="export-pdf" class="export-button" title="Export as PDF">
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z" fill="currentColor"/>
-                            </svg>
-                            Export PDF
-                        </button>
+                        <div class="action-buttons">
+                            <button id="clear-results" class="action-button" title="Clear All Results">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M7 21c-.55 0-1.02-.196-1.412-.587A1.927 1.927 0 0 1 5 19V6H4V4h5V3h6v1h5v2h-1v13c0 .55-.196 1.02-.587 1.413A1.927 1.927 0 0 1 17 21H7ZM17 6H7v13h10V6ZM9 17h2V8H9v9Zm4 0h2V8h-2v9ZM7 6v13V6Z" fill="currentColor"/>
+                                </svg>
+                            </button>
+                            <button id="export-pdf" class="action-button" title="Export as PDF">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z" fill="currentColor"/>
+                                </svg>
+                            </button>
+                        </div>
                     </div>
                     <div class="results-container">
                         <!-- Individual result blocks will be added here -->
