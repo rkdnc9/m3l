@@ -1,5 +1,53 @@
+// Declare global to extend Window interface
+declare global {
+    interface Window {
+        webkitSpeechRecognition: any;
+        SpeechRecognition: any;
+    }
+}
+
+// Update the SpeechRecognitionEvent interface to match the actual structure
+interface SpeechRecognitionEvent {
+    results: SpeechRecognitionResultList;
+    resultIndex: number;
+}
+
+interface SpeechRecognitionResultList {
+    length: number;
+    item(index: number): SpeechRecognitionResult;
+    [index: number]: SpeechRecognitionResult;
+}
+
+interface SpeechRecognitionResult {
+    isFinal: boolean;
+    length: number;
+    item(index: number): SpeechRecognitionAlternative;
+    [index: number]: SpeechRecognitionAlternative;
+}
+
+interface SpeechRecognitionAlternative {
+    transcript: string;
+    confidence: number;
+}
+
+interface SpeechRecognitionErrorEvent {
+    error: string;
+}
+
+class SpeechRecognitionClass {
+    continuous: boolean = false;
+    interimResults: boolean = false;
+    lang: string = 'en-US';
+    onstart: (() => void) | null = null;
+    onend: (() => void) | null = null;
+    onresult: ((event: SpeechRecognitionEvent) => void) | null = null;
+    onerror: ((event: SpeechRecognitionErrorEvent) => void) | null = null;
+    start(): void {}
+    stop(): void {}
+}
+
 export class VoiceService {
-    private recognition: SpeechRecognition | null = null;
+    private recognition: SpeechRecognitionClass | null = null;
     private isListening: boolean = false;
     private voiceButton: HTMLButtonElement;
     private textarea: HTMLTextAreaElement;
@@ -18,7 +66,7 @@ export class VoiceService {
             return;
         }
 
-        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        const SpeechRecognition = (window.SpeechRecognition || window.webkitSpeechRecognition) as typeof SpeechRecognitionClass;
         this.recognition = new SpeechRecognition();
         
         this.recognition.continuous = true;
@@ -41,7 +89,7 @@ export class VoiceService {
             this.stopListening();
         };
 
-        this.recognition.onresult = (event) => {
+        this.recognition.onresult = (event: SpeechRecognitionEvent) => {
             if (this.timeoutId) {
                 clearTimeout(this.timeoutId);
                 this.timeoutId = window.setTimeout(() => {
@@ -66,7 +114,7 @@ export class VoiceService {
             this.textarea.value = finalTranscript || interimTranscript;
         };
 
-        this.recognition.onerror = (event) => {
+        this.recognition.onerror = (event: SpeechRecognitionErrorEvent) => {
             console.error('Speech recognition error:', event.error);
             if (event.error === 'no-speech') {
                 this.stopListening();
