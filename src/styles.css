@@ -267,6 +267,7 @@ body {
     display: flex;
     flex-direction: column;
     gap: 12px;
+    width: 100%;
 }
 
 .query-section textarea {
@@ -797,6 +798,58 @@ button:focus {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+}
+
+/* Voice input button */
+.voice-input-btn {
+    width: 38px;
+    height: 38px;
+    padding: 0;
+    border-radius: 12px;
+    background: rgba(var(--accent-primary-rgb), 0.15);
+    border: 1px solid rgba(var(--accent-primary-rgb), 0.3);
+    color: var(--accent-primary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.voice-input-btn:hover {
+    background: rgba(var(--accent-primary-rgb), 0.25);
+    border-color: rgba(var(--accent-primary-rgb), 0.4);
+    transform: translateY(-1px);
+}
+
+.voice-input-btn.listening {
+    animation: pulse 1.5s ease-in-out infinite;
+    background: rgba(255, 59, 48, 0.15);
+    border-color: rgba(255, 59, 48, 0.3);
+    color: rgb(255, 59, 48);
+}
+
+@keyframes pulse {
+    0% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.05);
+    }
+    100% {
+        transform: scale(1);
+    }
+}
+
+/* Theme-specific styles */
+.theme-white .voice-input-btn {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+}
+
+.theme-white .voice-input-btn:hover {
+    background: var(--bg-primary);
+    border-color: var(--accent-primary);
 }
 
 /* When file is selected */
@@ -1393,36 +1446,25 @@ select:hover {
     gap: 12px;
 }
 
-.query-options {
+.query-section textarea {
+    width: 100%;
+    min-height: 100px;
+    margin-bottom: 12px;
+}
+
+.query-section .button-container {
     display: flex;
+    gap: 12px;
     align-items: center;
-    margin: -4px 0;
-    padding: 0 2px;
 }
 
-.shortcut-option {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    font-size: 12px;
-    color: var(--text-secondary);
-    cursor: pointer;
+.query-section #submit-query {
+    flex: 1;
 }
 
-.shortcut-option input[type="checkbox"] {
-    width: 13px;
-    height: 13px;
-    margin: 0;
-    cursor: pointer;
-    accent-color: var(--accent-primary);
-}
-
-#nl-query {
-    margin: 0;
-}
-
-#submit-query {
-    margin: 0;
+.voice-input-btn {
+    height: 38px;
+    width: 38px;
 }
 
 /* Scrollbar styling for each theme */
