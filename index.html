@@ -31,15 +31,12 @@
                                 <span class="color-dot"></span>
                             </button>
                         </div>
+                        <button class="settings-icon" aria-label="Settings">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M12 15.5C14.21 15.5 16 13.71 16 11.5C16 9.29 14.21 7.5 12 7.5C9.79 7.5 8 9.29 8 11.5C8 13.71 9.79 15.5 12 15.5ZM19.43 12.97C19.47 12.65 19.5 12.33 19.5 12C19.5 11.67 19.47 11.34 19.43 11L21.54 9.37C21.73 9.22 21.78 8.95 21.66 8.73L19.66 5.27C19.54 5.05 19.27 4.96 19.05 5.05L16.56 6.05C16.04 5.66 15.5 5.32 14.87 5.07L14.5 2.42C14.46 2.18 14.25 2 14 2H10C9.75 2 9.54 2.18 9.5 2.42L9.13 5.07C8.5 5.32 7.96 5.66 7.44 6.05L4.95 5.05C4.73 4.96 4.46 5.05 4.34 5.27L2.34 8.73C2.21 8.95 2.27 9.22 2.46 9.37L4.57 11C4.53 11.34 4.5 11.67 4.5 12C4.5 12.33 4.53 12.65 4.57 12.97L2.46 14.63C2.27 14.78 2.21 15.05 2.34 15.27L4.34 18.73C4.46 18.95 4.73 19.04 4.95 18.95L7.44 17.95C7.96 18.34 8.5 18.68 9.13 18.93L9.5 21.58C9.54 21.82 9.75 22 10 22H14C14.25 22 14.46 21.82 14.5 21.58L14.87 18.93C15.5 18.68 16.04 18.34 16.56 17.95L19.05 18.95C19.27 19.04 19.54 18.95 19.66 18.73L21.66 15.27C21.78 15.05 21.73 14.78 21.54 14.63L19.43 12.97Z" fill="currentColor"/>
+                            </svg>
+                        </button>
                         <button class="help-icon" aria-label="Show Help">?</button>
-                    </div>
-
-                    <div class="api-key-section">
-                        <input type="password" id="api-key" placeholder="Enter OpenAI/Claude API Key">
-                        <select id="api-provider">
-                            <option value="openai">OpenAI</option>
-                            <option value="claude">Claude</option>
-                        </select>
                     </div>
 
                     <div class="file-section">
@@ -92,6 +89,33 @@
                     <li>All analysis happens right on your computer</li>
                     <li>Only basic data structure is shared with your AI provider</li>
                 </ul>
+            </div>
+        </div>
+
+        <!-- Add Settings Modal -->
+        <div class="settings-modal" hidden>
+            <div class="settings-content">
+                <button class="close-settings">×</button>
+                <h2>Settings</h2>
+                <div class="settings-form">
+                    <div class="form-group">
+                        <label for="settings-api-key">API Key</label>
+                        <input type="password" id="settings-api-key" placeholder="Enter OpenAI/Claude API Key">
+                    </div>
+                    <div class="form-group">
+                        <label for="settings-api-provider">API Provider</label>
+                        <select id="settings-api-provider">
+                            <option value="openai">OpenAI</option>
+                            <option value="claude">Claude</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="persist-settings">
+                            <span>Keep the key and service persisted</span>
+                        </label>
+                    </div>
+                </div>
             </div>
         </div>
     </div>

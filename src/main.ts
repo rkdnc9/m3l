@@ -17,6 +17,7 @@ import { ModalService } from './services/ModalService';
 import { ChartService } from './services/ChartService';
 import { jsPDF } from 'jspdf';
 import autoTable from 'jspdf-autotable';
+import { SettingsService } from './services/SettingsService';
 
 // Register Chart.js components
 ChartJS.register(
@@ -40,8 +41,9 @@ class App {
         this.initializeApp();
         this.setupThemeSelector();
         ModalService.setupModal('.help-modal', '.close-help');
+        SettingsService.setupSettingsModal();
         
-        // Show modal on first visit
+        // Show help modal on first visit
         if (!localStorage.getItem('hasVisited')) {
             const helpModal = document.querySelector('.help-modal') as HTMLElement;
             if (helpModal) {
@@ -59,49 +61,20 @@ class App {
     private setupEventListeners() {
         const uploadBtn = document.getElementById('upload-btn') as HTMLButtonElement;
         const submitBtn = document.getElementById('submit-query') as HTMLButtonElement;
-        const apiKeyInput = document.getElementById('api-key') as HTMLInputElement;
-        const providerSelect = document.getElementById('api-provider') as HTMLSelectElement;
         const fileInput = document.getElementById('file-input') as HTMLInputElement;
         const fileSection = document.querySelector('.file-section') as HTMLElement;
         const fileName = document.querySelector('.file-name') as HTMLElement;
 
-        uploadBtn.addEventListener('click', () => {
-            fileInput.click();
-        });
-        submitBtn.addEventListener('click', () => this.handleQuery());
-        
-        // Update LLM handler immediately if API key is present
-        if (apiKeyInput.value) {
-            this.llm = new LLMHandler(
-                apiKeyInput.value,
-                providerSelect.value as 'openai' | 'claude'
-            );
-        }
-
-        // Listen for changes in API key
-        apiKeyInput.addEventListener('input', () => {
-            if (apiKeyInput.value) {
-                this.llm = new LLMHandler(
-                    apiKeyInput.value,
-                    providerSelect.value as 'openai' | 'claude'
-                );
-            } else {
-                this.llm = null;
-            }
+        // File upload button click
+        uploadBtn?.addEventListener('click', () => {
+            fileInput?.click();
         });
 
-        // Listen for changes in provider
-        providerSelect.addEventListener('change', () => {
-            if (apiKeyInput.value) {
-                this.llm = new LLMHandler(
-                    apiKeyInput.value,
-                    providerSelect.value as 'openai' | 'claude'
-                );
-            }
-        });
+        // Submit query button click
+        submitBtn?.addEventListener('click', () => this.handleQuery());
 
-        // Handle file selection
-        fileInput.addEventListener('change', async (event) => {
+        // File input change
+        fileInput?.addEventListener('change', async (event) => {
             const target = event.target as HTMLInputElement;
             if (target.files && target.files[0]) {
                 try {
@@ -110,6 +83,7 @@ class App {
                     fileSection.classList.add('has-file');
                     this.showToast('File loaded successfully');
                 } catch (error) {
+                    console.error('Error loading file:', error);
                     fileName.textContent = 'No file selected';
                     fileSection.classList.remove('has-file');
                     this.showToast(`Error loading file: ${error}`);
@@ -120,29 +94,27 @@ class App {
             }
         });
 
+        // Handle keyboard shortcuts for query
         const textarea = document.getElementById('nl-query') as HTMLTextAreaElement;
         const shortcutCheckbox = document.getElementById('enable-shortcut') as HTMLInputElement;
-        const submitButton = document.getElementById('submit-query') as HTMLButtonElement;
         
         // Save checkbox state to localStorage
-        shortcutCheckbox.addEventListener('change', () => {
+        shortcutCheckbox?.addEventListener('change', () => {
             localStorage.setItem('enableShortcut', shortcutCheckbox.checked.toString());
         });
 
         // Load saved checkbox state
         const savedShortcutState = localStorage.getItem('enableShortcut');
-        if (savedShortcutState !== null) {
+        if (savedShortcutState !== null && shortcutCheckbox) {
             shortcutCheckbox.checked = savedShortcutState === 'true';
         }
 
         // Handle keyboard shortcuts
-        textarea.addEventListener('keydown', async (e) => {
-            if (!shortcutCheckbox.checked) return;
+        textarea?.addEventListener('keydown', async (e) => {
+            if (!shortcutCheckbox?.checked) return;
             
             const isMac = navigator.platform.toUpperCase().indexOf('MAC') >= 0;
             
-            // Check for both Command+Enter (Mac) and Ctrl+Enter (Windows)
-            // Also allow plain Enter if checkbox is checked
             const shouldTrigger = e.key === 'Enter' && (
                 (!isMac && !e.shiftKey) || // Windows/Linux: Enter without shift
                 (isMac && (e.metaKey || !e.shiftKey)) // Mac: Command+Enter or Enter without shift
@@ -150,31 +122,31 @@ class App {
 
             if (shouldTrigger) {
                 e.preventDefault();
-                submitButton.click(); // Trigger the button click event
+                submitBtn?.click();
             }
         });
 
+        // Export button
         const exportButton = document.getElementById('export-pdf');
-        if (exportButton) {
-            exportButton.addEventListener('click', () => this.exportToPDF());
-        }
+        exportButton?.addEventListener('click', () => this.exportToPDF());
 
-        // Add help icon event listener
+        // Help icon
         const helpIcon = document.querySelector('.help-icon') as HTMLButtonElement;
-        if (helpIcon) {
-            helpIcon.addEventListener('click', () => {
-                const helpModal = document.querySelector('.help-modal') as HTMLElement;
-                if (helpModal) {
-                    helpModal.removeAttribute('hidden');
-                }
-            });
-        }
+        helpIcon?.addEventListener('click', () => {
+            const helpModal = document.querySelector('.help-modal') as HTMLElement;
+            if (helpModal) {
+                helpModal.removeAttribute('hidden');
+            }
+        });
     }
 
     private async handleQuery() {
         if (!this.validateQueryPrerequisites()) return;
 
         try {
+            const settings = SettingsService.getCurrentSettings();
+            this.llm = new LLMHandler(settings.apiKey, settings.provider);
+            
             const queryInput = document.getElementById('nl-query') as HTMLTextAreaElement;
             const query = queryInput.value;
             const shouldVisualize = detectVisualizationIntent(query);
@@ -196,14 +168,9 @@ class App {
             return false;
         }
 
-        const queryInput = document.getElementById('nl-query') as HTMLTextAreaElement;
-        if (!queryInput.value) {
-            this.showToast('Please enter a query');
-            return false;
-        }
-
-        if (!this.llm) {
-            this.showToast('Please enter an API key');
+        const settings = SettingsService.getCurrentSettings();
+        if (!settings.apiKey) {
+            this.showToast('Please enter an API key in settings');
             return false;
         }
 
