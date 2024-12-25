@@ -40,9 +40,14 @@
                     </div>
 
                     <div class="file-section">
-                        <button id="upload-btn">Select File</button>
-                        <input type="file" id="file-input" accept=".csv,.json">
-                        <span class="file-name">No file selected</span>
+                        <div class="smart-input-wrapper">
+                            <input type="text" 
+                                   class="smart-input" 
+                                   id="data-source"
+                                   placeholder="Drag & drop a file or paste an API endpoint URL"
+                                   spellcheck="false">
+                            <input type="file" id="file-input" accept=".csv,.json" hidden>
+                        </div>
                     </div>
 
                     <div class="query-section">

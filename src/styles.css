@@ -1670,3 +1670,54 @@ body.theme-white .table-container::-webkit-scrollbar-thumb:hover {
     transform: translateY(-1px);
     box-shadow: 0 4px 12px rgba(var(--accent-primary-rgb), 0.2);
 }
+
+/* Smart File/URL Input Section */
+.file-section {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 20px;
+    position: relative;
+}
+
+.smart-input-wrapper {
+    flex: 1;
+    position: relative;
+}
+
+.smart-input {
+    width: 100%;
+    padding: 12px 16px;
+    background: rgba(0, 0, 0, 0.2);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    color: var(--text-primary);
+    font-family: var(--font-mono);
+    font-size: 14px;
+    transition: all 0.2s ease;
+}
+
+.smart-input:hover {
+    border-color: var(--accent-primary);
+    background: rgba(var(--accent-primary-rgb), 0.1);
+}
+
+.smart-input:focus {
+    outline: none;
+    border-color: var(--accent-primary);
+    box-shadow: 0 0 0 2px rgba(var(--accent-primary-rgb), 0.1);
+}
+
+.input-icon {
+    display: none;
+}
+
+.smart-input[data-type="url"] + .input-icon {
+    color: var(--accent-primary);
+}
+
+.smart-input-wrapper.dragging .smart-input {
+    background: rgba(var(--accent-primary-rgb), 0.15);
+    border-color: var(--accent-primary);
+    border-style: dashed;
+}

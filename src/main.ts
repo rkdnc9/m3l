@@ -58,12 +58,21 @@ class App {
         this.setupEventListeners();
     }
 
+    private isValidUrl(str: string): boolean {
+        try {
+            new URL(str);
+            return true;
+        } catch {
+            return false;
+        }
+    }
+
     private setupEventListeners() {
         const uploadBtn = document.getElementById('upload-btn') as HTMLButtonElement;
         const submitBtn = document.getElementById('submit-query') as HTMLButtonElement;
+        const dataSourceInput = document.getElementById('data-source') as HTMLInputElement;
         const fileInput = document.getElementById('file-input') as HTMLInputElement;
-        const fileSection = document.querySelector('.file-section') as HTMLElement;
-        const fileName = document.querySelector('.file-name') as HTMLElement;
+        const smartInputWrapper = document.querySelector('.smart-input-wrapper') as HTMLElement;
 
         // File upload button click
         uploadBtn?.addEventListener('click', () => {
@@ -73,24 +82,61 @@ class App {
         // Submit query button click
         submitBtn?.addEventListener('click', () => this.handleQuery());
 
-        // File input change
-        fileInput?.addEventListener('change', async (event) => {
+        // Handle drag and drop
+        smartInputWrapper.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            smartInputWrapper.classList.add('dragging');
+        });
+
+        smartInputWrapper.addEventListener('dragleave', () => {
+            smartInputWrapper.classList.remove('dragging');
+        });
+
+        smartInputWrapper.addEventListener('drop', async (e) => {
+            e.preventDefault();
+            smartInputWrapper.classList.remove('dragging');
+            
+            if (e.dataTransfer?.files.length) {
+                const file = e.dataTransfer.files[0];
+                await this.handleFileInput(file);
+            }
+        });
+
+        // Handle click to upload
+        dataSourceInput.addEventListener('click', () => {
+            if (!dataSourceInput.value) {
+                fileInput.click();
+            }
+        });
+
+        // Handle file selection
+        fileInput.addEventListener('change', async (event) => {
             const target = event.target as HTMLInputElement;
-            if (target.files && target.files[0]) {
+            if (target.files?.[0]) {
+                await this.handleFileInput(target.files[0]);
+            }
+        });
+
+        // Handle URL input
+        dataSourceInput.addEventListener('input', async (e) => {
+            const input = e.target as HTMLInputElement;
+            const value = input.value.trim();
+
+            // Skip processing if the input is empty
+            if (!value) {
+                input.removeAttribute('data-type');
+                return;
+            }
+
+            if (this.isValidUrl(value)) {
+                input.setAttribute('data-type', 'url');
                 try {
-                    this.schema = await this.duckdb.loadFile(target.files[0]);
-                    fileName.textContent = target.files[0].name;
-                    fileSection.classList.add('has-file');
-                    this.showToast('File loaded successfully');
+                    await this.handleUrlInput(value);
                 } catch (error) {
-                    console.error('Error loading file:', error);
-                    fileName.textContent = 'No file selected';
-                    fileSection.classList.remove('has-file');
-                    this.showToast(`Error loading file: ${error}`);
+                    this.showToast(`Error loading API endpoint: ${error}`);
                 }
             } else {
-                fileName.textContent = 'No file selected';
-                fileSection.classList.remove('has-file');
+                input.removeAttribute('data-type');
             }
         });
 
@@ -441,6 +487,39 @@ class App {
         });
 
         return { headers, rows };
+    }
+
+    private async handleFileInput(file: File) {
+        const dataSourceInput = document.getElementById('data-source') as HTMLInputElement;
+        try {
+            this.schema = await this.duckdb.loadFile(file);
+            dataSourceInput.value = file.name;
+            this.showToast('File loaded successfully');
+        } catch (error) {
+            console.error('Error loading file:', error);
+            dataSourceInput.value = '';
+            this.showToast(`Error loading file: ${error}`);
+        }
+    }
+
+    private async handleUrlInput(url: string) {
+        try {
+            const response = await fetch(url);
+            if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+            
+            const data = await response.json();
+            
+            // Convert the JSON data to a Blob that can be handled by DuckDB
+            const blob = new Blob([JSON.stringify(data)], { type: 'application/json' });
+            const file = new File([blob], 'api-data.json', { type: 'application/json' });
+            
+            this.schema = await this.duckdb.loadFile(file);
+            this.showToast('API data loaded successfully');
+        } catch (error) {
+            console.error('Error loading API data:', error);
+            this.showToast(`Error loading API data: ${error}`);
+            throw error;
+        }
     }
 }
 
