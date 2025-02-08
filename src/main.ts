@@ -106,6 +106,10 @@ class App {
         const fileInput = document.getElementById('file-input') as HTMLInputElement;
         const fileSelectBtn = document.querySelector('.file-select-btn') as HTMLButtonElement;
         const smartInputWrapper = document.querySelector('.smart-input-wrapper') as HTMLElement;
+        const urlInput = document.querySelector('input[placeholder="Load File or URL"]') as HTMLInputElement;
+
+        console.log('URL input element:', urlInput); // Debug log
+        console.log('File select button:', fileSelectBtn); // Debug log
 
         // File upload button click
         uploadBtn?.addEventListener('click', () => {
@@ -155,25 +159,65 @@ class App {
 
         // File select button click handler
         if (fileSelectBtn) {
-            fileSelectBtn.addEventListener('click', () => {
+            fileSelectBtn.addEventListener('click', async () => {
+                console.log('File select button clicked');
+                console.log('URL input value:', urlInput?.value);
+
                 if (window.self !== window.top) {
-                    // If in iframe, request parent to scan for tables
                     console.log('Requesting parent to scan tables');
                     window.parent.postMessage({ type: 'SCAN_PAGE_TABLES' }, '*');
                 } else {
-                    // Normal file input behavior
-                    fileInput.click();
+                    // Check if URL is provided
+                    const url = urlInput?.value?.trim();
+                    console.log('Processed URL value:', url);
+
+                    if (url && url.length > 0) {
+                        console.log('URL provided, attempting to fetch:', url);
+                        try {
+                            const response = await fetch(url);
+                            if (!response.ok) {
+                                throw new Error(`HTTP error! status: ${response.status}`);
+                            }
+
+                            const contentType = response.headers.get('content-type');
+                            console.log('Content type:', contentType);
+
+                            let data: string;
+                            let fileType: string;
+
+                            if (contentType?.includes('application/json')) {
+                                const jsonData = await response.json();
+                                data = JSON.stringify(jsonData);
+                                fileType = 'json';
+                            } else {
+                                data = await response.text();
+                                fileType = 'csv';
+                            }
+
+                            console.log('Data format:', fileType);
+                            const file = new File([data], `data.${fileType}`, { type: `text/${fileType}` });
+                            await this.loadFile(file);
+                        } catch (error) {
+                            console.error('Error fetching URL:', error);
+                            this.showToast(`Error fetching data from URL: ${error.message}`);
+                        }
+                    } else {
+                        console.log('No URL provided, opening file dialog');
+                        fileInput.click();
+                    }
                 }
             });
         }
 
         // Handle file selection
-        fileInput.addEventListener('change', async (event) => {
-            const target = event.target as HTMLInputElement;
-            if (target.files?.[0]) {
-                await this.handleFileInput(target.files[0]);
-            }
-        });
+        if (fileInput) {
+            fileInput.addEventListener('change', async (event) => {
+                const files = (event.target as HTMLInputElement).files;
+                if (files && files.length > 0) {
+                    await this.loadFile(files[0]);
+                }
+            });
+        }
 
         // Handle keyboard shortcuts for query
         const textarea = document.getElementById('nl-query') as HTMLTextAreaElement;
@@ -613,6 +657,30 @@ class App {
         } catch (error) {
             console.error('Error loading tables:', error);
             this.showToast(`Error loading tables: ${error}`);
+        }
+    }
+
+    private async loadFile(file: File) {
+        try {
+            const dataSourceInput = document.getElementById('data-source') as HTMLInputElement;
+            
+            if (file.type.includes('json') || file.name.endsWith('.json')) {
+                console.log('Loading JSON file');
+                const text = await file.text();
+                const jsonData = JSON.parse(text);
+                this.schema = await this.duckdb.loadJSON(jsonData);
+            } else {
+                console.log('Loading CSV file');
+                this.schema = await this.duckdb.loadFile(file);
+            }
+
+            if (dataSourceInput) {
+                dataSourceInput.value = file.name;
+            }
+            this.showToast('File loaded successfully');
+        } catch (error) {
+            console.error('Error loading file:', error);
+            this.showToast(`Error loading file: ${error}`);
         }
     }
 }

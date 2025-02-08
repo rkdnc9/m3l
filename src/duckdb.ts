@@ -64,6 +64,28 @@ export class DuckDBHandler {
         return schema;
     }
 
+    async loadJSON(jsonData: any): Promise<string> {
+        if (!this.conn) throw new Error("Database not initialized");
+        
+        const tableName = 'data_table';
+        
+        // Convert JSON to a string and register it as a file buffer
+        const jsonString = JSON.stringify(jsonData);
+        const encoder = new TextEncoder();
+        const buffer = encoder.encode(jsonString);
+        
+        // Register the buffer with a temporary filename
+        const tempFileName = 'temp_json_data.json';
+        await this.db!.registerFileBuffer(tempFileName, buffer);
+        
+        // Create table from JSON
+        await this.conn.query(`DROP TABLE IF EXISTS ${tableName}`);
+        await this.conn.query(`CREATE TABLE ${tableName} AS SELECT * FROM read_json_auto('${tempFileName}')`);
+        
+        const schema = await this.getTableSchema(tableName);
+        return schema;
+    }
+
     private async getTableSchema(tableName: string): Promise<string> {
         if (!this.conn) throw new Error("Database not initialized");
         const result = await this.conn.query(`DESCRIBE ${tableName}`);
