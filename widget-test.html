@@ -3,183 +3,264 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>M3L Widget Test</title>
+    <title>Sales Analytics Dashboard</title>
     <style>
-        .content {
-            max-width: 1000px;
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+
+        .dashboard {
+            max-width: 1200px;
             margin: 0 auto;
             padding: 20px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            overflow-x: auto; /* Enable horizontal scroll if needed */
         }
-        
-        table {
+
+        h1 {
+            color: #333;
+            margin-bottom: 30px;
+        }
+
+        .table-container {
+            overflow-x: auto;
+            margin: 0 -20px;
+            padding: 0 20px;
+            max-height: 80vh; /* Limit height and enable vertical scroll */
+            overflow-y: auto;
+        }
+
+        .data-table {
             width: 100%;
+            min-width: 1000px; /* Minimum width to prevent squishing */
             border-collapse: collapse;
             margin: 20px 0;
-            font-family: Arial, sans-serif;
+            background: white;
         }
-        
-        th, td {
-            padding: 12px;
+
+        .data-table th {
+            background: #f8f9fa;
+            padding: 12px 16px;
             text-align: left;
-            border: 1px solid #ddd;
+            border-bottom: 2px solid #dee2e6;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+
+        .data-table td {
+            padding: 12px 16px;
+            border-bottom: 1px solid #dee2e6;
+        }
+
+        /* Column-specific widths */
+        .data-table .date-col {
+            width: 180px;
+            white-space: nowrap;
+        }
+
+        .data-table .order-col {
+            width: 120px;
+        }
+
+        .data-table .customer-col {
+            width: 150px;
+        }
+
+        .data-table .items-col {
+            min-width: 300px; /* Allow items column to be wider */
+        }
+
+        .data-table .amount-col {
+            width: 120px;
+            text-align: right;
+        }
+
+        .data-table .payment-col {
+            width: 130px;
+        }
+
+        .data-table .status-col {
+            width: 100px;
+        }
+
+        .data-table thead tr {
+            position: sticky;
+            top: 0;
+            background: #f8f9fa;
+            z-index: 1;
+        }
+
+        .trend-up {
+            color: #28a745;
         }
         
-        th {
-            background-color: #f5f5f5;
-            font-weight: bold;
+        .trend-down {
+            color: #dc3545;
         }
         
-        tr:nth-child(even) {
-            background-color: #fafafa;
+        .date-cell {
+            color: #666;
+        }
+
+        /* Add styles for table pages */
+        .table-page {
+            display: none; /* Hide all pages by default */
         }
         
-        tr:hover {
-            background-color: #f0f0f0;
+        .table-page.active {
+            display: table; /* Show active page */
         }
     </style>
 </head>
 <body>
-    <div class="content">
-        <h1>Store Sales Data</h1>
-        
-        <table>
-            <tr>
-                <th>Order ID</th>
-                <th>Date</th>
-                <th>Customer Name</th>
-                <th>Product</th>
-                <th>Category</th>
-                <th>Quantity</th>
-                <th>Unit Price</th>
-                <th>Total</th>
-                <th>Payment Method</th>
-                <th>Store Location</th>
-            </tr>
-            <tr>
-                <td>ORD-2024-001</td>
-                <td>2024-01-15</td>
-                <td>Sarah Johnson</td>
-                <td>Organic Coffee Beans</td>
-                <td>Beverages</td>
-                <td>3</td>
-                <td>14.99</td>
-                <td>44.97</td>
-                <td>Credit Card</td>
-                <td>Seattle Downtown</td>
-            </tr>
-            <tr>
-                <td>ORD-2024-002</td>
-                <td>2024-01-15</td>
-                <td>Michael Chen</td>
-                <td>Yoga Mat Premium</td>
-                <td>Sports</td>
-                <td>1</td>
-                <td>29.99</td>
-                <td>29.99</td>
-                <td>PayPal</td>
-                <td>Portland Main</td>
-            </tr>
-            <tr>
-                <td>ORD-2024-003</td>
-                <td>2024-01-16</td>
-                <td>Emily Davis</td>
-                <td>Wireless Earbuds</td>
-                <td>Electronics</td>
-                <td>2</td>
-                <td>79.99</td>
-                <td>159.98</td>
-                <td>Credit Card</td>
-                <td>San Francisco Bay</td>
-            </tr>
-            <tr>
-                <td>ORD-2024-004</td>
-                <td>2024-01-16</td>
-                <td>James Wilson</td>
-                <td>Organic Coffee Beans</td>
-                <td>Beverages</td>
-                <td>2</td>
-                <td>14.99</td>
-                <td>29.98</td>
-                <td>Cash</td>
-                <td>Seattle Downtown</td>
-            </tr>
-            <tr>
-                <td>ORD-2024-005</td>
-                <td>2024-01-17</td>
-                <td>Maria Garcia</td>
-                <td>Smart Watch Pro</td>
-                <td>Electronics</td>
-                <td>1</td>
-                <td>199.99</td>
-                <td>199.99</td>
-                <td>Credit Card</td>
-                <td>Portland Main</td>
-            </tr>
-            <tr>
-                <td>ORD-2024-006</td>
-                <td>2024-01-17</td>
-                <td>David Kim</td>
-                <td>Resistance Bands Set</td>
-                <td>Sports</td>
-                <td>3</td>
-                <td>19.99</td>
-                <td>59.97</td>
-                <td>PayPal</td>
-                <td>San Francisco Bay</td>
-            </tr>
-            <tr>
-                <td>ORD-2024-007</td>
-                <td>2024-01-18</td>
-                <td>Lisa Brown</td>
-                <td>Wireless Earbuds</td>
-                <td>Electronics</td>
-                <td>1</td>
-                <td>79.99</td>
-                <td>79.99</td>
-                <td>Credit Card</td>
-                <td>Seattle Downtown</td>
-            </tr>
-            <tr>
-                <td>ORD-2024-008</td>
-                <td>2024-01-18</td>
-                <td>Robert Martinez</td>
-                <td>Smart Watch Pro</td>
-                <td>Electronics</td>
-                <td>1</td>
-                <td>199.99</td>
-                <td>199.99</td>
-                <td>PayPal</td>
-                <td>Portland Main</td>
-            </tr>
-            <tr>
-                <td>ORD-2024-009</td>
-                <td>2024-01-19</td>
-                <td>Jennifer Taylor</td>
-                <td>Yoga Mat Premium</td>
-                <td>Sports</td>
-                <td>2</td>
-                <td>29.99</td>
-                <td>59.98</td>
-                <td>Credit Card</td>
-                <td>San Francisco Bay</td>
-            </tr>
-            <tr>
-                <td>ORD-2024-010</td>
-                <td>2024-01-19</td>
-                <td>William Lee</td>
-                <td>Organic Coffee Beans</td>
-                <td>Beverages</td>
-                <td>4</td>
-                <td>14.99</td>
-                <td>59.96</td>
-                <td>Cash</td>
-                <td>Seattle Downtown</td>
-            </tr>
-        </table>
+    <div class="dashboard">
+        <h1>Sales Analytics Dashboard</h1>
+
+        <div class="table-container">
+            <table class="data-table" id="salesTable">
+                <thead>
+                    <tr>
+                        <th class="date-col">Date</th>
+                        <th class="order-col">Order ID</th>
+                        <th class="customer-col">Customer</th>
+                        <th class="items-col">Items</th>
+                        <th class="amount-col">Total Amount</th>
+                        <th class="payment-col">Payment Method</th>
+                        <th class="status-col">Status</th>
+                    </tr>
+                </thead>
+                <tbody id="tableBody">
+                    <!-- All data will be populated here -->
+                </tbody>
+            </table>
+        </div>
     </div>
 
     <!-- Load the built widget.js file -->
-    <!-- Be sure to build the widget before running this file -->
     <script type="module" src="/dist/widget.js"></script>
+
+    <script>
+        // Generate realistic sales data
+        const customers = [
+            'John Smith', 'Emma Wilson', 'Michael Brown', 'Sarah Davis', 
+            'James Johnson', 'Lisa Anderson', 'Robert Taylor', 'Jennifer Martin',
+            'William Thompson', 'Elizabeth White', 'David Miller', 'Maria Garcia',
+            'Richard Moore', 'Patricia Lee', 'Joseph Clark', 'Margaret Hall'
+        ];
+
+        const products = [
+            { name: 'Laptop Pro X1', price: 1299.99 },
+            { name: 'Wireless Earbuds', price: 159.99 },
+            { name: 'Smart Watch Series 5', price: 399.99 },
+            { name: 'Gaming Console Elite', price: 499.99 },
+            { name: '4K Monitor 32"', price: 699.99 },
+            { name: 'Mechanical Keyboard', price: 129.99 },
+            { name: 'Wireless Mouse', price: 79.99 },
+            { name: 'USB-C Dock', price: 189.99 },
+            { name: 'External SSD 1TB', price: 159.99 },
+            { name: 'Noise-Canceling Headphones', price: 299.99 }
+        ];
+
+        const paymentMethods = ['Credit Card', 'PayPal', 'Apple Pay', 'Google Pay', 'Bank Transfer'];
+        const statuses = ['Completed', 'Processing', 'Shipped', 'Pending', 'Refunded'];
+
+        function generateRandomDate(start, end) {
+            return new Date(start.getTime() + Math.random() * (end.getTime() - start.getTime()));
+        }
+
+        function generateOrderItems() {
+            const numItems = Math.floor(Math.random() * 4) + 1;
+            const items = [];
+            let total = 0;
+
+            for (let i = 0; i < numItems; i++) {
+                const product = products[Math.floor(Math.random() * products.length)];
+                const quantity = Math.floor(Math.random() * 3) + 1;
+                items.push(`${product.name} x${quantity}`);
+                total += product.price * quantity;
+            }
+
+            return { items, total };
+        }
+
+        function generateSalesData(count) {
+            const sales = [];
+            const endDate = new Date();
+            const startDate = new Date();
+            startDate.setMonth(endDate.getMonth() - 1);
+
+            for (let i = 0; i < count; i++) {
+                const orderDate = generateRandomDate(startDate, endDate);
+                const { items, total } = generateOrderItems();
+                
+                sales.push({
+                    date: orderDate,
+                    orderId: `ORD-${String(i + 1).padStart(5, '0')}`,
+                    customer: customers[Math.floor(Math.random() * customers.length)],
+                    items: items.join(', '),
+                    total: total,
+                    paymentMethod: paymentMethods[Math.floor(Math.random() * paymentMethods.length)],
+                    status: statuses[Math.floor(Math.random() * statuses.length)]
+                });
+            }
+
+            // Sort by date, most recent first
+            return sales.sort((a, b) => b.date - a.date);
+        }
+
+        const salesData = generateSalesData(100); // Generate 100 sales records
+
+        function formatDate(date) {
+            return new Intl.DateTimeFormat('en-US', {
+                year: 'numeric',
+                month: 'short',
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            }).format(date);
+        }
+
+        function formatCurrency(amount) {
+            return new Intl.NumberFormat('en-US', {
+                style: 'currency',
+                currency: 'USD'
+            }).format(amount);
+        }
+
+        function getStatusClass(status) {
+            switch(status) {
+                case 'Completed': return 'trend-up';
+                case 'Refunded': return 'trend-down';
+                default: return '';
+            }
+        }
+
+        function displayAllSales() {
+            const tableBody = document.getElementById('tableBody');
+            
+            tableBody.innerHTML = salesData.map(sale => `
+                <tr>
+                    <td class="date-cell">${formatDate(sale.date)}</td>
+                    <td>${sale.orderId}</td>
+                    <td>${sale.customer}</td>
+                    <td>${sale.items}</td>
+                    <td class="amount-col">${formatCurrency(sale.total)}</td>
+                    <td>${sale.paymentMethod}</td>
+                    <td class="${getStatusClass(sale.status)}">${sale.status}</td>
+                </tr>
+            `).join('');
+        }
+
+        // Display all sales on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            displayAllSales();
+        });
+    </script>
 </body>
 </html> 
