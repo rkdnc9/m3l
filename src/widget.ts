@@ -86,8 +86,13 @@ class M3LWidget {
         document.body.appendChild(this.container);
         console.log('M3L Widget constructor completed');
 
-        // Detect and process tables
-        this.detectAndProcessTables();
+        // Listen for messages from iframe
+        window.addEventListener('message', (event) => {
+            if (event.data.type === 'SCAN_PAGE_TABLES') {
+                console.log('Received request to scan tables');
+                this.detectAndProcessTables();
+            }
+        });
     }
 
     private toggle() {
@@ -105,7 +110,13 @@ class M3LWidget {
         const tables = document.getElementsByTagName('table');
         console.log(`Found ${tables.length} tables`);
 
-        if (tables.length === 0) return;
+        if (tables.length === 0) {
+            // Notify iframe that no tables were found
+            this.iframe.contentWindow?.postMessage({
+                type: 'NO_TABLES_FOUND'
+            }, '*');
+            return;
+        }
 
         const tableData = Array.from(tables).map((table, index) => {
             const csvData = this.tableToCSV(table);
@@ -116,16 +127,11 @@ class M3LWidget {
             };
         });
 
-        this.iframe.addEventListener('load', () => {
-            console.log('Iframe loaded, sending data...');
-            setTimeout(() => {
-                console.log('Sending table data to iframe:', tableData);
-                this.iframe.contentWindow?.postMessage({
-                    type: 'LOAD_TABLES',
-                    tables: tableData
-                }, '*');
-            }, 2000); // Increased timeout to ensure app is ready
-        });
+        console.log('Sending table data to iframe:', tableData);
+        this.iframe.contentWindow?.postMessage({
+            type: 'LOAD_TABLES',
+            tables: tableData
+        }, '*');
     }
 
     private tableToCSV(table: HTMLTableElement): string {

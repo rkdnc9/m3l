@@ -71,8 +71,10 @@ class App {
                 console.log('Received message in iframe:', event.data);
                 if (event.data.type === 'LOAD_TABLES') {
                     console.log('Processing tables:', event.data.tables);
-                    // Store tables data to process after initialization
                     this.pendingTables = event.data.tables;
+                    await this.loadTablesFromParent(event.data.tables);
+                } else if (event.data.type === 'NO_TABLES_FOUND') {
+                    this.showToast('No tables found on the page');
                 }
             });
         }
@@ -152,25 +154,18 @@ class App {
         });
 
         // File select button click handler
-        fileSelectBtn?.addEventListener('click', async () => {
-            const inputValue = dataSourceInput.value.trim();
-            
-            if (inputValue) {
-                // If there's text in the input, treat it as a URL
-                if (this.isValidUrl(inputValue)) {
-                    try {
-                        await this.handleUrlInput(inputValue);
-                    } catch (error) {
-                        this.showToast(`Error loading API endpoint: ${error}`);
-                    }
+        if (fileSelectBtn) {
+            fileSelectBtn.addEventListener('click', () => {
+                if (window.self !== window.top) {
+                    // If in iframe, request parent to scan for tables
+                    console.log('Requesting parent to scan tables');
+                    window.parent.postMessage({ type: 'SCAN_PAGE_TABLES' }, '*');
                 } else {
-                    this.showToast('Please enter a valid URL or clear the field to select a file');
+                    // Normal file input behavior
+                    fileInput.click();
                 }
-            } else {
-                // If no text, open file selector
-                fileInput.click();
-            }
-        });
+            });
+        }
 
         // Handle file selection
         fileInput.addEventListener('change', async (event) => {
