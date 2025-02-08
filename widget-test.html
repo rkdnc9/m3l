@@ -5,72 +5,182 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>M3L Widget Test</title>
     <style>
-        /* Add some content to scroll through */
         .content {
-            max-width: 800px;
+            max-width: 1000px;
             margin: 0 auto;
             padding: 20px;
         }
         
-        h1 {
-            color: #333;
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            font-family: Arial, sans-serif;
         }
         
-        .sample-text {
-            margin-bottom: 20px;
-            line-height: 1.6;
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border: 1px solid #ddd;
+        }
+        
+        th {
+            background-color: #f5f5f5;
+            font-weight: bold;
+        }
+        
+        tr:nth-child(even) {
+            background-color: #fafafa;
+        }
+        
+        tr:hover {
+            background-color: #f0f0f0;
         }
     </style>
 </head>
 <body>
     <div class="content">
-        <h1>Test Page for M3L Widget</h1>
+        <h1>Store Sales Data</h1>
         
-        <!-- Add a sample data table with styles -->
-        <table border="1" style="margin: 20px 0; border-collapse: collapse; width: 100%;">
-            <tr style="background-color: #f2f2f2;">
-                <th style="padding: 10px;">Name</th>
-                <th style="padding: 10px;">Age</th>
-                <th style="padding: 10px;">City</th>
+        <table>
+            <tr>
+                <th>Order ID</th>
+                <th>Date</th>
+                <th>Customer Name</th>
+                <th>Product</th>
+                <th>Category</th>
+                <th>Quantity</th>
+                <th>Unit Price</th>
+                <th>Total</th>
+                <th>Payment Method</th>
+                <th>Store Location</th>
             </tr>
             <tr>
-                <td style="padding: 10px;">John Doe</td>
-                <td style="padding: 10px;">30</td>
-                <td style="padding: 10px;">New York</td>
+                <td>ORD-2024-001</td>
+                <td>2024-01-15</td>
+                <td>Sarah Johnson</td>
+                <td>Organic Coffee Beans</td>
+                <td>Beverages</td>
+                <td>3</td>
+                <td>14.99</td>
+                <td>44.97</td>
+                <td>Credit Card</td>
+                <td>Seattle Downtown</td>
             </tr>
             <tr>
-                <td style="padding: 10px;">Jane Smith</td>
-                <td style="padding: 10px;">25</td>
-                <td style="padding: 10px;">Los Angeles</td>
+                <td>ORD-2024-002</td>
+                <td>2024-01-15</td>
+                <td>Michael Chen</td>
+                <td>Yoga Mat Premium</td>
+                <td>Sports</td>
+                <td>1</td>
+                <td>29.99</td>
+                <td>29.99</td>
+                <td>PayPal</td>
+                <td>Portland Main</td>
             </tr>
             <tr>
-                <td style="padding: 10px;">Bob Johnson</td>
-                <td style="padding: 10px;">35</td>
-                <td style="padding: 10px;">Chicago</td>
+                <td>ORD-2024-003</td>
+                <td>2024-01-16</td>
+                <td>Emily Davis</td>
+                <td>Wireless Earbuds</td>
+                <td>Electronics</td>
+                <td>2</td>
+                <td>79.99</td>
+                <td>159.98</td>
+                <td>Credit Card</td>
+                <td>San Francisco Bay</td>
+            </tr>
+            <tr>
+                <td>ORD-2024-004</td>
+                <td>2024-01-16</td>
+                <td>James Wilson</td>
+                <td>Organic Coffee Beans</td>
+                <td>Beverages</td>
+                <td>2</td>
+                <td>14.99</td>
+                <td>29.98</td>
+                <td>Cash</td>
+                <td>Seattle Downtown</td>
+            </tr>
+            <tr>
+                <td>ORD-2024-005</td>
+                <td>2024-01-17</td>
+                <td>Maria Garcia</td>
+                <td>Smart Watch Pro</td>
+                <td>Electronics</td>
+                <td>1</td>
+                <td>199.99</td>
+                <td>199.99</td>
+                <td>Credit Card</td>
+                <td>Portland Main</td>
+            </tr>
+            <tr>
+                <td>ORD-2024-006</td>
+                <td>2024-01-17</td>
+                <td>David Kim</td>
+                <td>Resistance Bands Set</td>
+                <td>Sports</td>
+                <td>3</td>
+                <td>19.99</td>
+                <td>59.97</td>
+                <td>PayPal</td>
+                <td>San Francisco Bay</td>
+            </tr>
+            <tr>
+                <td>ORD-2024-007</td>
+                <td>2024-01-18</td>
+                <td>Lisa Brown</td>
+                <td>Wireless Earbuds</td>
+                <td>Electronics</td>
+                <td>1</td>
+                <td>79.99</td>
+                <td>79.99</td>
+                <td>Credit Card</td>
+                <td>Seattle Downtown</td>
+            </tr>
+            <tr>
+                <td>ORD-2024-008</td>
+                <td>2024-01-18</td>
+                <td>Robert Martinez</td>
+                <td>Smart Watch Pro</td>
+                <td>Electronics</td>
+                <td>1</td>
+                <td>199.99</td>
+                <td>199.99</td>
+                <td>PayPal</td>
+                <td>Portland Main</td>
+            </tr>
+            <tr>
+                <td>ORD-2024-009</td>
+                <td>2024-01-19</td>
+                <td>Jennifer Taylor</td>
+                <td>Yoga Mat Premium</td>
+                <td>Sports</td>
+                <td>2</td>
+                <td>29.99</td>
+                <td>59.98</td>
+                <td>Credit Card</td>
+                <td>San Francisco Bay</td>
+            </tr>
+            <tr>
+                <td>ORD-2024-010</td>
+                <td>2024-01-19</td>
+                <td>William Lee</td>
+                <td>Organic Coffee Beans</td>
+                <td>Beverages</td>
+                <td>4</td>
+                <td>14.99</td>
+                <td>59.96</td>
+                <td>Cash</td>
+                <td>Seattle Downtown</td>
             </tr>
         </table>
-
-        <div class="sample-text">
-            <h2>Sample Content</h2>
-            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
-        </div>
-
-        <div class="sample-text">
-            <h2>More Content</h2>
-            <p>Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
-        </div>
-
-        <div class="sample-text">
-            <h2>Even More Content</h2>
-            <p>Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.</p>
-        </div>
     </div>
 
     <!-- Load the widget script -->
     <script type="module">
         import M3LWidget from '/src/widget.ts';
-        
-        // Initialize the widget
         document.addEventListener('DOMContentLoaded', () => {
             new M3LWidget();
         });
