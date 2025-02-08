@@ -7,7 +7,8 @@ export default defineConfig({
       'Cross-Origin-Opener-Policy': 'same-origin',
       'Cross-Origin-Embedder-Policy': 'require-corp',
       'Content-Security-Policy': "script-src 'self' 'unsafe-eval' 'unsafe-inline' blob:;"
-    }
+    },
+    open: '/widget-test.html'
   },
   optimizeDeps: {
     exclude: ['@duckdb/duckdb-wasm']
@@ -19,6 +20,12 @@ export default defineConfig({
       output: {
         format: 'es'
       }
+    },
+    lib: {
+      entry: 'src/widget.ts',
+      name: 'M3LWidget',
+      fileName: 'm3l-widget',
+      formats: ['iife', 'es']
     }
   }
 })

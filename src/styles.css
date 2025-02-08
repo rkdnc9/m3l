@@ -1961,3 +1961,31 @@ body.theme-white .table-container::-webkit-scrollbar-thumb:hover {
 .theme-white .file-select-btn:hover {
     background: var(--bg-secondary);
 }
+
+/* Add to your existing styles */
+body.in-iframe {
+    /* Remove any margins/padding when in iframe */
+    margin: 0;
+    padding: 0;
+    /* Ensure content fits in iframe */
+    max-height: 100vh;
+    overflow: hidden;
+}
+
+body.in-iframe .container {
+    /* Adjust layout for iframe */
+    border-radius: 0;
+    box-shadow: none;
+}
+
+/* Add responsive styles for mobile */
+@media (max-width: 480px) {
+    .m3l-widget iframe {
+        width: 100vw;
+        height: 80vh;
+        position: fixed;
+        bottom: 0;
+        right: 0;
+        border-radius: 12px 12px 0 0;
+    }
+}

@@ -38,6 +38,11 @@ class App {
     private schema: string = '';
 
     constructor() {
+        // Add iframe-specific styles
+        if (window.self !== window.top) {
+            document.body.classList.add('in-iframe');
+        }
+        
         this.duckdb = new DuckDBHandler();
         this.initializeApp();
         this.setupThemeSelector();
