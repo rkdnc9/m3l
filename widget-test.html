@@ -178,12 +178,8 @@
         </table>
     </div>
 
-    <!-- Load the widget script -->
-    <script type="module">
-        import M3LWidget from '/src/widget.ts';
-        document.addEventListener('DOMContentLoaded', () => {
-            new M3LWidget();
-        });
-    </script>
+    <!-- Load the built widget.js file -->
+    <!-- Be sure to build the widget before running this file -->
+    <script type="module" src="/dist/widget.js"></script>
 </body>
 </html> 
