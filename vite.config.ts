@@ -18,7 +18,8 @@ export default defineConfig({
     sourcemap: false,  // Disable source maps
     rollupOptions: {
       output: {
-        format: 'es'
+        extend: true,
+        manualChunks: undefined
       }
     },
     lib: {

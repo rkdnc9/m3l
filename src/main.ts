@@ -36,6 +36,7 @@ class App {
     private duckdb: DuckDBHandler;
     private llm: LLMHandler | null = null;
     private schema: string = '';
+    private pendingTables: Array<{ name: string, data: string }> | null = null;
 
     constructor() {
         // Add iframe-specific styles
@@ -62,10 +63,28 @@ class App {
             }
             localStorage.setItem('hasVisited', 'true');
         }
+
+        // Add message listener for table data
+        if (window.self !== window.top) {
+            console.log('App running in iframe, setting up message listener');
+            window.addEventListener('message', async (event) => {
+                console.log('Received message in iframe:', event.data);
+                if (event.data.type === 'LOAD_TABLES') {
+                    console.log('Processing tables:', event.data.tables);
+                    // Store tables data to process after initialization
+                    this.pendingTables = event.data.tables;
+                }
+            });
+        }
     }
 
     private async initializeApp() {
         await this.duckdb.initialize();
+        // Process any pending tables after initialization
+        if (this.pendingTables) {
+            await this.loadTablesFromParent(this.pendingTables);
+            this.pendingTables = null;
+        }
         this.setupEventListeners();
     }
 
@@ -571,6 +590,34 @@ class App {
         const resultsContainer = document.querySelector('.results-container');
         if (resultsContainer) {
             resultsContainer.innerHTML = '';
+        }
+    }
+
+    private async loadTablesFromParent(tables: Array<{ name: string, data: string }>) {
+        try {
+            console.log('Starting to load tables into DuckDB');
+            for (const table of tables) {
+                console.log(`Processing table: ${table.name}`);
+                // Create a Blob from the CSV data
+                const blob = new Blob([table.data], { type: 'text/csv' });
+                const file = new File([blob], `${table.name}.csv`, { type: 'text/csv' });
+
+                // Load the file into DuckDB
+                this.schema = await this.duckdb.loadFile(file);
+                console.log(`Table ${table.name} loaded successfully`);
+            }
+
+            // Update UI to show tables are loaded
+            const dataSourceInput = document.getElementById('data-source') as HTMLInputElement;
+            if (dataSourceInput) {
+                dataSourceInput.value = `${tables.length} table(s) from page`;
+                console.log('Updated data source input');
+            }
+
+            this.showToast('Tables loaded successfully');
+        } catch (error) {
+            console.error('Error loading tables:', error);
+            this.showToast(`Error loading tables: ${error}`);
         }
     }
 }

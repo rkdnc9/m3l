@@ -2,8 +2,17 @@ class M3LWidget {
     private container: HTMLElement;
     private iframe: HTMLIFrameElement;
     private isOpen: boolean = false;
+    private static instance: M3LWidget | null = null;
 
     constructor() {
+        // Ensure only one instance is created
+        if (M3LWidget.instance) {
+            return M3LWidget.instance;
+        }
+        M3LWidget.instance = this;
+
+        console.log('M3L Widget constructor started');
+        
         // Create container for the widget
         this.container = document.createElement('div');
         this.container.className = 'm3l-widget-container';
@@ -40,48 +49,127 @@ class M3LWidget {
             right: 0;
         `;
 
-        // Create iframe
+        // Create iframe with explicit origin
         this.iframe = document.createElement('iframe');
         this.iframe.className = 'm3l-widget-iframe';
         this.iframe.style.cssText = `
-            width: 400px;
-            height: 600px;
+            width: 450px;
+            height: 700px;
             border: none;
             border-radius: 12px;
             box-shadow: 0 4px 12px rgba(0,0,0,0.15);
             background: white;
             margin-bottom: 10px;
             display: none;
-            position: absolute;
-            bottom: 70px;
-            right: 0;
+            position: fixed;
+            bottom: 80px;
+            right: 20px;
+            transition: all 0.3s ease;
         `;
 
-        // Set iframe source based on environment
-        const isDevelopment = process.env.NODE_ENV === 'development';
-        this.iframe.src = isDevelopment ? 'http://localhost:3000' : 'YOUR_DEPLOYED_APP_URL';
+        // Set iframe source with explicit origin
+        const origin = window.location.origin;
+        console.log('Setting iframe source with origin:', origin);
+        this.iframe.src = `${origin}`;
 
         // Add elements to container
         this.container.appendChild(this.iframe);
         this.container.appendChild(toggleButton);
 
         // Add click handler
-        toggleButton.addEventListener('click', () => this.toggle());
+        toggleButton.addEventListener('click', () => {
+            console.log('Toggle button clicked');
+            this.toggle();
+        });
 
         // Add to page
         document.body.appendChild(this.container);
+        console.log('M3L Widget constructor completed');
+
+        // Detect and process tables
+        this.detectAndProcessTables();
     }
 
     private toggle() {
         this.isOpen = !this.isOpen;
-        this.iframe.style.display = this.isOpen ? 'block' : 'none';
+        if (this.iframe) {
+            this.iframe.style.display = this.isOpen ? 'block' : 'none';
+            
+            // Log state for debugging
+            console.log('Widget toggled:', this.isOpen ? 'open' : 'closed');
+        }
+    }
+
+    private detectAndProcessTables() {
+        console.log('Detecting tables...');
+        const tables = document.getElementsByTagName('table');
+        console.log(`Found ${tables.length} tables`);
+
+        if (tables.length === 0) return;
+
+        const tableData = Array.from(tables).map((table, index) => {
+            const csvData = this.tableToCSV(table);
+            console.log(`Table ${index + 1} data:`, csvData.substring(0, 100));
+            return {
+                name: `table_${index + 1}`,
+                data: csvData
+            };
+        });
+
+        this.iframe.addEventListener('load', () => {
+            console.log('Iframe loaded, sending data...');
+            setTimeout(() => {
+                console.log('Sending table data to iframe:', tableData);
+                this.iframe.contentWindow?.postMessage({
+                    type: 'LOAD_TABLES',
+                    tables: tableData
+                }, '*');
+            }, 2000); // Increased timeout to ensure app is ready
+        });
+    }
+
+    private tableToCSV(table: HTMLTableElement): string {
+        const rows = table.rows;
+        const csvRows: string[] = [];
+
+        // Get headers
+        const headers = Array.from(rows[0].cells).map(cell => 
+            this.cleanCSVValue(cell.textContent || '')
+        );
+        csvRows.push(headers.join(','));
+
+        // Get data rows
+        for (let i = 1; i < rows.length; i++) {
+            const row = rows[i];
+            const rowData = Array.from(row.cells).map(cell => 
+                this.cleanCSVValue(cell.textContent || '')
+            );
+            csvRows.push(rowData.join(','));
+        }
+
+        return csvRows.join('\n');
+    }
+
+    private cleanCSVValue(value: string): string {
+        // Remove newlines and extra spaces
+        value = value.replace(/[\n\r]+/g, ' ').trim();
+        // Escape quotes and wrap in quotes if contains comma
+        if (value.includes(',') || value.includes('"')) {
+            value = `"${value.replace(/"/g, '""')}"`;
+        }
+        return value;
     }
 }
 
 // Initialize widget when script loads
+console.log('Widget script loaded, initializing...');
 if (typeof window !== 'undefined') {
+    let widgetInstance: M3LWidget | null = null;
     window.addEventListener('load', () => {
-        new M3LWidget();
+        console.log('Window loaded, creating widget...');
+        if (!widgetInstance) {
+            widgetInstance = new M3LWidget();
+        }
     });
 }
 
