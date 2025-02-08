@@ -197,7 +197,7 @@ class App {
                             console.log('Data format:', fileType);
                             const file = new File([data], `data.${fileType}`, { type: `text/${fileType}` });
                             await this.loadFile(file);
-                        } catch (error) {
+                        } catch (error: any) {
                             console.error('Error fetching URL:', error);
                             this.showToast(`Error fetching data from URL: ${error.message}`);
                         }
@@ -602,26 +602,6 @@ class App {
             console.error('Error loading file:', error);
             dataSourceInput.value = '';
             this.showToast(`Error loading file: ${error}`);
-        }
-    }
-
-    private async handleUrlInput(url: string) {
-        try {
-            const response = await fetch(url);
-            if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-            
-            const data = await response.json();
-            
-            // Convert the JSON data to a Blob that can be handled by DuckDB
-            const blob = new Blob([JSON.stringify(data)], { type: 'application/json' });
-            const file = new File([blob], 'api-data.json', { type: 'application/json' });
-            
-            this.schema = await this.duckdb.loadFile(file);
-            this.showToast('API data loaded successfully');
-        } catch (error) {
-            console.error('Error loading API data:', error);
-            this.showToast(`Error loading API data: ${error}`);
-            throw error;
         }
     }
 

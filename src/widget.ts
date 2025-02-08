@@ -1,6 +1,6 @@
 class M3LWidget {
-    private container: HTMLElement;
-    private iframe: HTMLIFrameElement;
+    private container!: HTMLElement;
+    private iframe!: HTMLIFrameElement;
     private isOpen: boolean = false;
     private static instance: M3LWidget | null = null;
 
