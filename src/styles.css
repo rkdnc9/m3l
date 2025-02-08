@@ -1989,3 +1989,18 @@ body.in-iframe .container {
         border-radius: 12px 12px 0 0;
     }
 }
+
+/* Hide mobile FAB when in iframe */
+body.in-iframe .mobile-query-fab {
+    display: none !important;
+}
+
+/* Adjust container padding when in iframe */
+body.in-iframe .container {
+    padding-bottom: 0;
+}
+
+/* Ensure the results container fills the iframe height */
+body.in-iframe .results-container {
+    max-height: calc(100vh - 200px);
+}

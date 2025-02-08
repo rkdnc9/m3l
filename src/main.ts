@@ -41,6 +41,11 @@ class App {
         // Add iframe-specific styles
         if (window.self !== window.top) {
             document.body.classList.add('in-iframe');
+            // Explicitly hide the mobile query button
+            const mobileQueryBtn = document.getElementById('mobile-query-btn');
+            if (mobileQueryBtn) {
+                mobileQueryBtn.remove(); // Remove it completely when in iframe
+            }
         }
         
         this.duckdb = new DuckDBHandler();

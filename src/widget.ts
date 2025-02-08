@@ -6,7 +6,7 @@ class M3LWidget {
     constructor() {
         // Create container for the widget
         this.container = document.createElement('div');
-        this.container.className = 'm3l-widget';
+        this.container.className = 'm3l-widget-container';
         this.container.style.cssText = `
             position: fixed;
             bottom: 20px;
@@ -16,6 +16,7 @@ class M3LWidget {
 
         // Create toggle button
         const toggleButton = document.createElement('button');
+        toggleButton.className = 'm3l-widget-toggle';
         toggleButton.innerHTML = `
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H6l-2 2V4h16v12z" fill="currentColor"/>
@@ -34,10 +35,14 @@ class M3LWidget {
             align-items: center;
             justify-content: center;
             padding: 0;
+            position: absolute;
+            bottom: 0;
+            right: 0;
         `;
 
         // Create iframe
         this.iframe = document.createElement('iframe');
+        this.iframe.className = 'm3l-widget-iframe';
         this.iframe.style.cssText = `
             width: 400px;
             height: 600px;
@@ -47,6 +52,9 @@ class M3LWidget {
             background: white;
             margin-bottom: 10px;
             display: none;
+            position: absolute;
+            bottom: 70px;
+            right: 0;
         `;
 
         // Set iframe source based on environment
